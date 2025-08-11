@@ -1,0 +1,329 @@
+--[[
+	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+]]
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Удаляем старый GUI, если есть
+local oldGui = playerGui:FindFirstChild("RemoteScannerGui")
+if oldGui then oldGui:Destroy() end
+
+-- Создаём базовый GUI
+local ScreenGui = Instance.new("ScreenGui", playerGui)
+ScreenGui.Name = "RemoteScannerGui"
+ScreenGui.ResetOnSpawn = false
+
+-- Основная рамка
+local Frame = Instance.new("Frame", ScreenGui)
+Frame.Size = UDim2.new(0, 650, 0, 580)
+Frame.Position = UDim2.new(0.5, -225, 0.5, -290)
+Frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+Frame.BorderSizePixel = 0
+Frame.ClipsDescendants = true
+
+-- Заголовок
+local TitleBar = Instance.new("Frame", Frame)
+TitleBar.Size = UDim2.new(1, 0, 0, 30)
+TitleBar.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+TitleBar.BorderSizePixel = 0
+
+local TitleLabel = Instance.new("TextLabel", TitleBar)
+TitleLabel.Text = "Remote Scanner"
+TitleLabel.Size = UDim2.new(1, -40, 1, 0)
+TitleLabel.Position = UDim2.new(0, 10, 0, 0)
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.TextColor3 = Color3.new(1, 1, 1)
+TitleLabel.Font = Enum.Font.SourceSansBold
+TitleLabel.TextSize = 18
+TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+TitleLabel.TextYAlignment = Enum.TextYAlignment.Center
+
+local CloseButton = Instance.new("TextButton", TitleBar)
+CloseButton.Text = "✕"
+CloseButton.Size = UDim2.new(0, 30, 1, 0)
+CloseButton.Position = UDim2.new(1, -35, 0, 0)
+CloseButton.BackgroundColor3 = Color3.fromRGB(150, 40, 40)
+CloseButton.BorderSizePixel = 0
+CloseButton.Font = Enum.Font.SourceSansBold
+CloseButton.TextSize = 22
+CloseButton.TextColor3 = Color3.new(1, 1, 1)
+CloseButton.AutoButtonColor = true
+
+CloseButton.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+-- Поисковое поле
+local SearchBox = Instance.new("TextBox", Frame)
+SearchBox.Size = UDim2.new(1, -10, 0, 30)
+SearchBox.Position = UDim2.new(0, 5, 0, 35)
+SearchBox.PlaceholderText = "Введите имя ремота для поиска..."
+SearchBox.ClearTextOnFocus = false
+SearchBox.Text = ""
+
+-- ScrollingFrame для списка
+local ScrollFrame = Instance.new("ScrollingFrame", Frame)
+ScrollFrame.Size = UDim2.new(1, -10, 1, -75)
+ScrollFrame.Position = UDim2.new(0, 5, 0, 70)
+ScrollFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+ScrollFrame.BorderSizePixel = 0
+ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+ScrollFrame.ScrollBarThickness = 8
+
+local UIListLayout = Instance.new("UIListLayout", ScrollFrame)
+UIListLayout.Padding = UDim.new(0, 5)
+UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+-- Dragging
+local dragging, dragInput, dragStart, startPos
+
+local function updatePosition(input)
+    local delta = input.Position - dragStart
+    Frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X,
+                              startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+TitleBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = Frame.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+TitleBar.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        updatePosition(input)
+    end
+end)
+
+-- Функции для сбора ремотов
+
+local function scanRemotes()
+    local remotes = {}
+
+    local function findRemotesIn(parent)
+        for _, child in pairs(parent:GetChildren()) do
+            if child:IsA("RemoteEvent") or child:IsA("RemoteFunction") then
+                table.insert(remotes, child)
+            end
+            findRemotesIn(child)
+        end
+    end
+
+    findRemotesIn(Workspace)
+    findRemotesIn(ReplicatedStorage)
+
+    return remotes
+end
+
+local remotes = scanRemotes()
+
+local function createButton(text, sizeX, sizeY)
+    local btn = Instance.new("TextButton")
+    btn.Text = text
+    btn.Size = UDim2.new(0, sizeX, 0, sizeY)
+    btn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    btn.BorderSizePixel = 0
+    btn.TextColor3 = Color3.new(1, 1, 1)
+    btn.Font = Enum.Font.SourceSans
+    btn.TextSize = 18
+    btn.AutoButtonColor = true
+    btn.Active = true
+    return btn
+end
+
+local function checkBackdoor(remote)
+    local name = remote.Name:lower()
+    local suspiciousKeywords = {"kick", "ban", "shutdown", "destroy", "remove", "delete", "exit", "stop"}
+    for _, word in pairs(suspiciousKeywords) do
+        if string.find(name, word) then
+            return true
+        end
+    end
+    return false
+end
+
+-- Функция обновления списка ремотов с учётом фильтра
+local function updateRemoteList(filter)
+    filter = filter:lower()
+    -- Очищаем список
+    for _, child in pairs(ScrollFrame:GetChildren()) do
+        if child:IsA("Frame") then
+            child:Destroy()
+        end
+    end
+
+    local filteredRemotes = {}
+    for _, remote in pairs(remotes) do
+        if remote.Name:lower():find(filter) then
+            table.insert(filteredRemotes, remote)
+        end
+    end
+
+    -- Создаём элементы для отфильтрованных ремотов
+    for index, remote in pairs(filteredRemotes) do
+        local remoteFrame = Instance.new("Frame", ScrollFrame)
+        remoteFrame.Size = UDim2.new(1, -10, 0, 40)
+        remoteFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+        remoteFrame.BorderSizePixel = 0
+        remoteFrame.LayoutOrder = index
+
+        local nameLabel = Instance.new("TextLabel", remoteFrame)
+        nameLabel.Text = remote.Name
+        nameLabel.Size = UDim2.new(0.4, 0, 1, 0)
+        nameLabel.BackgroundTransparency = 1
+        nameLabel.TextColor3 = Color3.new(1, 1, 1)
+        nameLabel.Font = Enum.Font.SourceSans
+        nameLabel.TextSize = 16
+        nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+        nameLabel.Position = UDim2.new(0, 10, 0, 0)
+
+        local fireBtn = createButton("Fire", 60, 30)
+        fireBtn.Parent = remoteFrame
+        fireBtn.Position = UDim2.new(0.45, 0, 0.15, 0)
+
+        local backdoorBtn = createButton("Backdoor", 90, 30)
+        backdoorBtn.Parent = remoteFrame
+        backdoorBtn.Position = UDim2.new(0.65, 0, 0.15, 0)
+
+        local copyBtn = createButton("Copy Code", 90, 30)
+        copyBtn.Parent = remoteFrame
+        copyBtn.Position = UDim2.new(0.85, 0, 0.15, 0)
+
+        fireBtn.MouseButton1Click:Connect(function()
+            if remote:IsA("RemoteEvent") then
+                print("Calling FireServer on "..remote:GetFullName())
+                remote:FireServer()
+            elseif remote:IsA("RemoteFunction") then
+                print("Calling InvokeServer on "..remote:GetFullName())
+                local success, result = pcall(function()
+                    return remote:InvokeServer()
+                end)
+                if success then
+                    print("Result: ", result)
+                else
+                    warn("InvokeServer error:", result)
+                end
+            end
+        end)
+
+        backdoorBtn.MouseButton1Click:Connect(function()
+            local isSuspicious = checkBackdoor(remote)
+            if isSuspicious then
+                warn("Possible backdoor detected in "..remote:GetFullName())
+
+                -- Создаём сервер-сайд executor GUI
+                local execGui = Instance.new("ScreenGui", playerGui)
+                execGui.Name = "ServerSideExecutor"
+                execGui.ResetOnSpawn = false
+
+                local execFrame = Instance.new("Frame", execGui)
+                execFrame.Size = UDim2.new(0, 500, 0, 300)
+                execFrame.Position = UDim2.new(0.5, -250, 0.5, -150)
+                execFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+                execFrame.BorderSizePixel = 0
+
+                local closeBtn = Instance.new("TextButton", execFrame)
+                closeBtn.Size = UDim2.new(0, 30, 0, 30)
+                closeBtn.Position = UDim2.new(1, -35, 0, 5)
+                closeBtn.Text = "X"
+                closeBtn.BackgroundColor3 = Color3.fromRGB(150, 40, 40)
+                closeBtn.TextColor3 = Color3.new(1,1,1)
+                closeBtn.Font = Enum.Font.SourceSansBold
+                closeBtn.TextSize = 20
+                closeBtn.AutoButtonColor = true
+
+                closeBtn.MouseButton1Click:Connect(function()
+                    execGui:Destroy()
+                end)
+
+                local codeBox = Instance.new("TextBox", execFrame)
+                codeBox.MultiLine = true
+                codeBox.Size = UDim2.new(1, -20, 1, -60)
+                codeBox.Position = UDim2.new(0, 10, 0, 40)
+                codeBox.Text = ""
+                codeBox.ClearTextOnFocus = false
+                codeBox.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+                codeBox.TextColor3 = Color3.new(1,1,1)
+                codeBox.Font = Enum.Font.Code
+                codeBox.TextSize = 18
+                codeBox.TextWrapped = true
+
+                local executeBtn = Instance.new("TextButton", execFrame)
+                executeBtn.Text = "Execute"
+                executeBtn.Size = UDim2.new(0, 100, 0, 30)
+                executeBtn.Position = UDim2.new(0, 10, 1, -40)
+                executeBtn.BackgroundColor3 = Color3.fromRGB(40, 120, 40)
+                executeBtn.TextColor3 = Color3.new(1,1,1)
+                executeBtn.Font = Enum.Font.SourceSansBold
+                executeBtn.TextSize = 18
+
+                executeBtn.MouseButton1Click:Connect(function()
+                    local code = codeBox.Text
+                    -- Здесь вставляй код для выполнения сервер-сайд (по твоему механизму)
+                    print("Executing server-side code:\n"..code)
+                end)
+
+                local clearBtn = Instance.new("TextButton", execFrame)
+                clearBtn.Text = "Clear"
+                clearBtn.Size = UDim2.new(0, 100, 0, 30)
+                clearBtn.Position = UDim2.new(1, -110, 1, -40)
+                clearBtn.BackgroundColor3 = Color3.fromRGB(120, 40, 40)
+                clearBtn.TextColor3 = Color3.new(1,1,1)
+                clearBtn.Font = Enum.Font.SourceSansBold
+                clearBtn.TextSize = 18
+
+                clearBtn.MouseButton1Click:Connect(function()
+                    codeBox.Text = ""
+                end)
+
+            else
+                print("No suspicious keywords found in "..remote:GetFullName())
+            end
+        end)
+
+        copyBtn.MouseButton1Click:Connect(function()
+            local code = ""
+            if remote:IsA("RemoteEvent") then
+                code = ("game:GetService('ReplicatedStorage'):WaitForChild('%s'):FireServer()"):format(remote.Name)
+            elseif remote:IsA("RemoteFunction") then
+                code = ("game:GetService('ReplicatedStorage'):WaitForChild('%s'):InvokeServer()"):format(remote.Name)
+            end
+
+            pcall(function()
+                setclipboard(code)
+            end)
+
+            print("Copied code to clipboard:\n"..code)
+        end)
+    end
+
+    RunService.Heartbeat:Wait()
+    local contentSize = UIListLayout.AbsoluteContentSize
+    ScrollFrame.CanvasSize = UDim2.new(0, 0, 0, contentSize.Y + 10)
+end
+
+SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+    updateRemoteList(SearchBox.Text)
+end)
+
+updateRemoteList("")
