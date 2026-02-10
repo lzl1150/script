@@ -1,14 +1,19 @@
-local Screen= setmetatable({}, {
-__index= function(_, key)
-local cam= workspace.CurrentCamera
-local size= cam and cam.ViewportSize or Vector2.new(1920, 1080)
-if key== "Width" then
-return size.X
-elseif key== "Height" then
-return size.Y
-elseif key== "Size" then
-return size
-end end})
+-- 凝视表情系统 - 完整中文版
+-- 第一部分 (1/3)
+
+local Screen = setmetatable({}, {
+    __index = function(_, key)
+        local cam = workspace.CurrentCamera
+        local size = cam and cam.ViewportSize or Vector2.new(1920, 1080)
+        if key == "Width" then
+            return size.X
+        elseif key == "Height" then
+            return size.Y
+        elseif key == "Size" then
+            return size
+        end
+    end
+})
 
 local UserInputService = game:GetService("UserInputService")
 local Screen = workspace.CurrentCamera.ViewportSize
@@ -58,11 +63,11 @@ end)
 
 local Settings = {}
 Settings["Stop Emote When Moving"] = true
-Settings["Fade In"]     = 0.1
-Settings["Fade Out"]    = 0.1
-Settings["Weight"]      = 1
-Settings["Speed"]       = 1
-Settings["Allow Invisible  "]    = true
+Settings["Fade In"] = 0.1
+Settings["Fade Out"] = 0.1
+Settings["Weight"] = 1
+Settings["Speed"] = 1
+Settings["Allow Invisible"] = true
 Settings["Time Position"] = 0
 Settings["Freeze On Finish"] = false
 Settings["Looped"] = true
@@ -134,11 +139,11 @@ local function LoadTrack(id)
     local weight = Settings["Weight"]
     if weight == 0 then weight = 0.001 end
     if Settings["Stop Other Animations On Play"] then
-    for _,t in pairs(humanoid.Animator:GetPlayingAnimationTracks())do
-        if t.Priority ~= Enum.AnimationPriority.Action4 then
-            t:Stop()
+        for _,t in pairs(humanoid.Animator:GetPlayingAnimationTracks()) do
+            if t.Priority ~= Enum.AnimationPriority.Action4 then
+                t:Stop()
+            end
         end
-    end
     end
     newTrack:Play(Settings["Fade In"], weight, Settings["Speed"])
     CurrentTrack = newTrack 
@@ -149,28 +154,24 @@ local function LoadTrack(id)
 end
 
 RunService.RenderStepped:Connect(function()
+    if Settings["Looped"] and CurrentTrack and CurrentTrack.IsPlaying then
+        CurrentTrack.Looped = Settings["Looped"]
+    end
 
-
-
-if Settings["Looped"] and CurrentTrack and CurrentTrack.IsPlaying then
-	CurrentTrack.Looped = Settings["Looped"]
-end
-
-if character:FindFirstChild("HumanoidRootPart") then
-	local root = character.HumanoidRootPart
-	if Settings["Stop Emote When Moving"] and CurrentTrack and CurrentTrack.IsPlaying then
-		local moved = (root.Position - lastPosition).Magnitude > 0.1
-		local jumped = humanoid and humanoid:GetState() == Enum.HumanoidStateType.Jumping
-		if moved or jumped then
-			CurrentTrack:Stop(Settings["Fade Out"])
-			CurrentTrack = nil
-		end
-	end
-
-	lastPosition = root.Position
-end
-
+    if character:FindFirstChild("HumanoidRootPart") then
+        local root = character.HumanoidRootPart
+        if Settings["Stop Emote When Moving"] and CurrentTrack and CurrentTrack.IsPlaying then
+            local moved = (root.Position - lastPosition).Magnitude > 0.1
+            local jumped = humanoid and humanoid:GetState() == Enum.HumanoidStateType.Jumping
+            if moved or jumped then
+                CurrentTrack:Stop(Settings["Fade Out"])
+                CurrentTrack = nil
+            end
+        end
+        lastPosition = root.Position
+    end
 end)
+
 local CoreGui = Services.CoreGui
 local gui = Instance.new("ScreenGui")
 gui.Name = "GazeEmoteGUI"
@@ -187,11 +188,6 @@ local function createCorner(parent, cornerRadius)
     return corner
 end
 
-
-
-
-
-
 local mainContainer = Instance.new("Frame")
 mainContainer.Size = UDim2.new(0, scale("X", 600), 0, scale("Y", 400))
 mainContainer.Position = UDim2.new(0.5, -scale("X", 400), 0.5, -scale("Y", 250))
@@ -200,14 +196,15 @@ mainContainer.Active = true
 mainContainer.Draggable = true
 mainContainer.Parent = gui
 createCorner(mainContainer, 12)
-local g=Instance.new("UIGradient");g.Color=ColorSequence.new(Color3.fromRGB(255,255,255),Color3.fromRGB(255,255,255));g.Transparency=NumberSequence.new{NumberSequenceKeypoint.new(0,0.05),NumberSequenceKeypoint.new(1,0.1)};g.Parent=mainContainer
-
-
+local g = Instance.new("UIGradient")
+g.Color = ColorSequence.new(Color3.fromRGB(255,255,255), Color3.fromRGB(255,255,255))
+g.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0.05), NumberSequenceKeypoint.new(1,0.1)})
+g.Parent = mainContainer
 
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, scale("Y", 36))
 title.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-title.Text = "Gaze Emotes"
+title.Text = "凝视表情系统"
 title.TextColor3 = Color3.new(1, 1, 1)
 title.Font = Enum.Font.GothamBold
 title.TextScaled = true
@@ -218,7 +215,7 @@ local catalogTabBtn = Instance.new("TextButton")
 catalogTabBtn.Size = UDim2.new(0.3, 0, 0, scale("Y", 24))
 catalogTabBtn.Position = UDim2.new(0.05, 0, 0, scale("Y", 40))
 catalogTabBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 120)
-catalogTabBtn.Text = "Catalog"
+catalogTabBtn.Text = "表情目录"
 catalogTabBtn.TextColor3 = Color3.new(1, 1, 1)
 catalogTabBtn.Font = Enum.Font.GothamBold
 catalogTabBtn.TextScaled = true
@@ -229,7 +226,7 @@ local savedTabBtn = Instance.new("TextButton")
 savedTabBtn.Size = UDim2.new(0.3, 0, 0, scale("Y", 24))
 savedTabBtn.Position = UDim2.new(0.35, 0, 0, scale("Y", 40))
 savedTabBtn.BackgroundColor3 = Color3.fromRGB(60, 120, 60)
-savedTabBtn.Text = "Saved"
+savedTabBtn.Text = "已保存"
 savedTabBtn.TextColor3 = Color3.new(1, 1, 1)
 savedTabBtn.Font = Enum.Font.GothamBold
 savedTabBtn.TextScaled = true
@@ -253,7 +250,7 @@ catalogFrame.Parent = mainContainer
 local searchBox = Instance.new("TextBox")
 searchBox.Size = UDim2.new(0.6, -scale("X", 8), 0, scale("Y", 28))
 searchBox.Position = UDim2.new(0, scale("X", 8), 0, 0)
-searchBox.PlaceholderText = "Search..."
+searchBox.PlaceholderText = "搜索表情..."
 searchBox.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
 searchBox.TextColor3 = Color3.new(1, 1, 1)
 searchBox.Font = Enum.Font.Gotham
@@ -267,7 +264,7 @@ local refreshBtn = Instance.new("TextButton")
 refreshBtn.Size = UDim2.new(0.2, -scale("X", 4), 0, scale("Y", 28))
 refreshBtn.Position = UDim2.new(0.6, scale("X", 4), 0, 0)
 refreshBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 220)
-refreshBtn.Text = "Refresh"
+refreshBtn.Text = "刷新"
 refreshBtn.Font = Enum.Font.GothamBold
 refreshBtn.TextScaled = true
 refreshBtn.TextColor3 = Color3.new(1, 1, 1)
@@ -278,7 +275,7 @@ local sortBtn = Instance.new("TextButton")
 sortBtn.Size = UDim2.new(0.2, -scale("X", 8), 0, scale("Y", 28))
 sortBtn.Position = UDim2.new(0.8, scale("X", 4), 0, 0)
 sortBtn.BackgroundColor3 = Color3.fromRGB(70, 70, 120)
-sortBtn.Text = "Sort: Relevance"
+sortBtn.Text = "排序: 相关性"
 sortBtn.Font = Enum.Font.GothamBold
 sortBtn.TextScaled = true
 sortBtn.TextColor3 = Color3.new(1, 1, 1)
@@ -295,7 +292,7 @@ savedFrame.Parent = mainContainer
 local savedSearch = Instance.new("TextBox")
 savedSearch.Size = UDim2.new(1, -scale("X", 16), 0, scale("Y", 28))
 savedSearch.Position = UDim2.new(0, scale("X", 8), 0, 0)
-savedSearch.PlaceholderText = "Search Saved..."
+savedSearch.PlaceholderText = "搜索已保存..."
 savedSearch.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
 savedSearch.TextColor3 = Color3.new(1, 1, 1)
 savedSearch.Font = Enum.Font.Gotham
@@ -317,7 +314,7 @@ local savedEmptyLabel = Instance.new("TextLabel")
 savedEmptyLabel.Size = UDim2.new(1, 0, 0, scale("Y", 36))
 savedEmptyLabel.Position = UDim2.new(0, 0, 0.5, -scale("Y", 18))
 savedEmptyLabel.BackgroundTransparency = 1
-savedEmptyLabel.Text = "Sorry I Was Changing Save Files Again 😅"
+savedEmptyLabel.Text = "暂无保存的表情"
 savedEmptyLabel.TextColor3 = Color3.new(1, 1, 1)
 savedEmptyLabel.Font = Enum.Font.GothamBold
 savedEmptyLabel.TextScaled = true
@@ -339,7 +336,7 @@ settingsFrame.Parent = mainContainer
 local settingsTitle = Instance.new("TextLabel")
 settingsTitle.Size = UDim2.new(1, 0, 0, scale("Y", 28))
 settingsTitle.BackgroundTransparency = 1
-settingsTitle.Text = "Settings"
+settingsTitle.Text = "设置"
 settingsTitle.TextColor3 = Color3.new(1, 1, 1)
 settingsTitle.Font = Enum.Font.GothamBold
 settingsTitle.TextScaled = true
@@ -367,7 +364,7 @@ listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
     scrollFrame.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 10)
 end)
 
- function GetReal(id)
+function GetReal(id)
     local ok, obj = pcall(function()
         return game:GetObjects("rbxassetid://"..tostring(id))
     end)
@@ -382,7 +379,7 @@ end
 Settings._sliders = {}
 Settings._toggles = {}
 
---// SLIDER CREATOR
+--// 滑块创建器
 local function createSlider(name, min, max, default)
     Settings[name] = default or min
 
@@ -397,11 +394,22 @@ local function createSlider(name, min, max, default)
     bg.Parent = container
     Instance.new("UICorner", bg).CornerRadius = UDim.new(0, 8)
 
+    -- 显示名称映射
+    local displayNames = {
+        ["Speed"] = "速度",
+        ["Time Position"] = "时间位置", 
+        ["Weight"] = "权重",
+        ["Fade In"] = "淡入时间",
+        ["Fade Out"] = "淡出时间"
+    }
+    
+    local displayName = displayNames[name] or name
+
     local label = Instance.new("TextLabel")
     label.Size = UDim2.new(0.5, -scale("X", 10), 0, scale("Y", 20))
     label.Position = UDim2.new(0, 10, 0, 5)
     label.BackgroundTransparency = 1
-    label.Text = string.format("%s: %.2f", name, Settings[name])
+    label.Text = string.format("%s: %.2f", displayName, Settings[name])
     label.TextColor3 = Color3.new(1, 1, 1)
     label.Font = Enum.Font.Gotham
     label.TextScaled = true
@@ -449,7 +457,7 @@ local function createSlider(name, min, max, default)
 
     local function applyValue(value)
         Settings[name] = math.clamp(value, min, max)
-        label.Text = string.format("%s: %.2f", name, Settings[name])
+        label.Text = string.format("%s: %.2f", displayName, Settings[name])
         textBox.Text = tostring(Settings[name])
         local rel = (Settings[name] - min) / (max - min)
         tweenVisual(rel)
@@ -517,7 +525,7 @@ local function createSlider(name, min, max, default)
     applyValue(Settings[name])
 end
 
---// TOGGLE CREATOR
+--// 开关创建器
 local function createToggle(name)
     Settings[name] = Settings[name] or false
 
@@ -527,11 +535,22 @@ local function createToggle(name)
     container.Parent = scrollFrame
     Instance.new("UICorner", container).CornerRadius = UDim.new(0, 6)
 
+    -- 显示名称映射
+    local displayNames = {
+        ["Stop Emote When Moving"] = "移动时停止表情",
+        ["Looped"] = "循环播放",
+        ["Allow Invisible  "] = "允许隐身",
+        ["Stop Other Animations On Play"] = "播放时停止其他动画",
+        ["Freeze On Finish"] = "完成时冻结"
+    }
+    
+    local displayName = displayNames[name] or name
+
     local label = Instance.new("TextLabel")
     label.Size = UDim2.new(0.7, -scale("X", 10), 1, 0)
     label.Position = UDim2.new(0, scale("X", 10), 0, 0)
     label.BackgroundTransparency = 1
-    label.Text = name
+    label.Text = displayName
     label.TextColor3 = Color3.new(1, 1, 1)
     label.Font = Enum.Font.Gotham
     label.TextScaled = true
@@ -548,7 +567,7 @@ local function createToggle(name)
     Instance.new("UICorner", toggleBtn).CornerRadius = UDim.new(1, 0)
 
     local function applyVisual(state)
-        toggleBtn.Text = state and "ON" or "OFF"
+        toggleBtn.Text = state and "开" or "关"
         toggleBtn.BackgroundColor3 = state and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(200, 0, 0)
     end
 
@@ -561,7 +580,7 @@ local function createToggle(name)
     Settings._toggles[name] = applyVisual
 end
 
---// UNIFIED EDIT FUNCTIONS
+--// 统一的编辑函数
 function Settings:EditSlider(targetName, newValue)
     local apply = self._sliders[targetName]
     if apply then
@@ -604,7 +623,7 @@ local function createButton(name, callback)
     return button
 end
 
-local resetButton = createButton("Reset Settings", function() end)
+local resetButton = createButton("重置设置", function() end)
 createToggle("Stop Emote When Moving")
 createToggle("Looped")
 createSlider("Speed", 0, 5, Settings["Speed"])
@@ -612,7 +631,7 @@ createSlider("Time Position", 0, 1, Settings["Time Position"])
 createSlider("Weight", 0, 1, Settings["Weight"])
 createSlider("Fade In", 0, 2, Settings["Fade In"])
 createSlider("Fade Out", 0, 2, Settings["Fade Out"])
-createToggle("Allow Invisible   ")
+createToggle("Allow Invisible  ")
 createToggle("Stop Other Animations On Play")
 
 resetButton.MouseButton1Click:Connect(function()
@@ -716,13 +735,15 @@ player.CharacterAdded:Connect(function(newCharacter)
     end)
 end)
 
+-- 第三部分 (3/3)
+
 local sortModes = {
-    {Enum.CatalogSortType.Relevance, "Relevance"},
-    {Enum.CatalogSortType.PriceHighToLow, "Price High→Low"},
-    {Enum.CatalogSortType.PriceLowToHigh, "Price Low→High"},
-    {Enum.CatalogSortType.MostFavorited, "Most Favorited"},
-    {Enum.CatalogSortType.RecentlyCreated, "Recently Created"},
-    {Enum.CatalogSortType.Bestselling, "Bestselling"},
+    {Enum.CatalogSortType.Relevance, "相关性"},
+    {Enum.CatalogSortType.PriceHighToLow, "价格高→低"},
+    {Enum.CatalogSortType.PriceLowToHigh, "价格低→高"},
+    {Enum.CatalogSortType.MostFavorited, "最多收藏"},
+    {Enum.CatalogSortType.RecentlyCreated, "最近创建"},
+    {Enum.CatalogSortType.Bestselling, "最畅销"},
 }
 local currentSortIndex = 1
 local currentKeyword = ""
@@ -767,45 +788,40 @@ local function createCard(item)
     name.Size = UDim2.new(1, -scale("X", 10), 0, scale("Y", 28))
     name.Position = UDim2.new(0, scale("X", 5), 0, scale("Y", 100))
     name.BackgroundTransparency = 1
-    name.Text = item.Name or "Unknown"
+    name.Text = item.Name or "未知"
     name.TextScaled = true
     name.TextWrapped = true
     name.Font = Enum.Font.GothamBold
     name.TextColor3 = Color3.new(1, 1, 1)
     name.Parent = card
-    
-    
 
+    local url = "https://www.roblox.com/catalog/" .. tonumber(item.Id)
+    local copyLinkButton = Instance.new("TextButton")
+    copyLinkButton.Parent = card
+    copyLinkButton.Size = UDim2.new(0, scale("X", 36), 0, scale("Y", 36))
+    copyLinkButton.Position = UDim2.new(1, -scale("X", 42), 0, scale("Y", 5))
+    copyLinkButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    copyLinkButton.Text = "🛒🔗"
+    copyLinkButton.Font = Enum.Font.GothamBold
+    copyLinkButton.TextScaled = true
+    copyLinkButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    copyLinkButton.AutoButtonColor = false
+    createCorner(copyLinkButton, 8)
 
-
-
-local url = "https://www.roblox.com/catalog/" .. tonumber(item.Id)
-local copyLinkButton = Instance.new("TextButton")
-copyLinkButton.Parent = card
-copyLinkButton.Size = UDim2.new(0, scale("X", 36), 0, scale("Y", 36))
-copyLinkButton.Position = UDim2.new(1, -scale("X", 42), 0, scale("Y", 5))
-copyLinkButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-copyLinkButton.Text = "🛒🔗"
-copyLinkButton.Font = Enum.Font.GothamBold
-copyLinkButton.TextScaled = true
-copyLinkButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-copyLinkButton.AutoButtonColor = false
-createCorner(copyLinkButton, 8)
-
-copyLinkButton.MouseButton1Click:Connect(function()
-	setclipboard(url)
-	copyLinkButton.Text = "✅"
-	copyLinkButton.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
-	task.wait(0.7)
-	copyLinkButton.Text = "🛒🔗"
-	copyLinkButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-end)
+    copyLinkButton.MouseButton1Click:Connect(function()
+        setclipboard(url)
+        copyLinkButton.Text = "✅"
+        copyLinkButton.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
+        task.wait(0.7)
+        copyLinkButton.Text = "🛒🔗"
+        copyLinkButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    end)
 
     local playBtn = Instance.new("TextButton")
     playBtn.Size = UDim2.new(0.45, -scale("X", 5), 0, scale("Y", 24))
     playBtn.Position = UDim2.new(0, scale("X", 5), 1, -scale("Y", 29))
     playBtn.BackgroundColor3 = Color3.fromRGB(60, 180, 60)
-    playBtn.Text = "Play"
+    playBtn.Text = "播放"
     playBtn.Font = Enum.Font.GothamBold
     playBtn.TextScaled = true
     playBtn.TextColor3 = Color3.new(1, 1, 1)
@@ -818,7 +834,7 @@ end)
     saveBtn.Size = UDim2.new(0.45, -scale("X", 5), 0, scale("Y", 24))
     saveBtn.Position = UDim2.new(0.55, 0, 1, -scale("Y", 29))
     saveBtn.BackgroundColor3 = Color3.fromRGB(60, 120, 180)
-    saveBtn.Text = "Save"
+    saveBtn.Text = "保存"
     saveBtn.Font = Enum.Font.GothamBold
     saveBtn.TextScaled = true
     saveBtn.TextColor3 = Color3.new(1, 1, 1)
@@ -833,37 +849,37 @@ end)
             end
         end
         if not alreadySaved then
-        function GetReal(id)
-    local ok, obj = pcall(function()
-        return game:GetObjects("rbxassetid://"..tostring(id))
-    end)
-    if not ok or not obj or #obj == 0 then return end
+            function GetReal(id)
+                local ok, obj = pcall(function()
+                    return game:GetObjects("rbxassetid://"..tostring(id))
+                end)
+                if not ok or not obj or #obj == 0 then return end
 
-    local target = obj[1]
-    if target:IsA("Animation") and target.AnimationId ~= "" then
-        return tonumber(target.AnimationId:match("%d+"))
-    elseif target:FindFirstChildOfClass("Animation") then
-        local anim = target:FindFirstChildOfClass("Animation")
-        return tonumber(anim.AnimationId:match("%d+"))
-    end
-end
+                local target = obj[1]
+                if target:IsA("Animation") and target.AnimationId ~= "" then
+                    return tonumber(target.AnimationId:match("%d+"))
+                elseif target:FindFirstChildOfClass("Animation") then
+                    local anim = target:FindFirstChildOfClass("Animation")
+                    return tonumber(anim.AnimationId:match("%d+"))
+                end
+            end
             table.insert(savedEmotes, {
                 Id = item.Id,
                 AssetId = thumbId,
-                Name = item.Name or "Unknown",
+                Name = item.Name or "未知",
                 AnimationId = "rbxassetid://" .. GetReal(thumbId),
                 Favorite = false
             })
             saveEmotesToData()
-            saveBtn.Text = "Saved!"
+            saveBtn.Text = "已保存!"
             saveBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
             task.wait(1)
-            saveBtn.Text = "Save"
+            saveBtn.Text = "保存"
             saveBtn.BackgroundColor3 = Color3.fromRGB(60, 120, 180)
         else
-            saveBtn.Text = "Already"
+            saveBtn.Text = "已存在"
             task.wait(0.7)
-            saveBtn.Text = "Save"
+            saveBtn.Text = "保存"
         end
     end)
     return card
@@ -885,7 +901,7 @@ local emptyLabel = Instance.new("TextLabel", scroll)
 emptyLabel.Size = UDim2.new(1, 0, 0, scale("Y", 36))
 emptyLabel.Position = UDim2.new(0, 0, 0.5, -scale("Y", 18))
 emptyLabel.BackgroundTransparency = 1
-emptyLabel.Text = "Nothing Silly Here :3 (except me)"
+emptyLabel.Text = "这里什么都没有 :3（除了我）"
 emptyLabel.TextColor3 = Color3.new(1, 1, 1)
 emptyLabel.Font = Enum.Font.GothamBold
 emptyLabel.TextScaled = true
@@ -895,7 +911,7 @@ local prevBtn = Instance.new("TextButton", catalogFrame)
 prevBtn.Size = UDim2.new(0.4, -scale("X", 6), 0, scale("Y", 32))
 prevBtn.Position = UDim2.new(0, scale("X", 4), 1, -scale("Y", 36))
 prevBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-prevBtn.Text = "< Prev"
+prevBtn.Text = "< 上一页"
 prevBtn.Font = Enum.Font.GothamBold
 prevBtn.TextScaled = true
 prevBtn.TextColor3 = Color3.new(1, 1, 1)
@@ -905,7 +921,7 @@ local nextBtn = Instance.new("TextButton", catalogFrame)
 nextBtn.Size = UDim2.new(0.4, -scale("X", 6), 0, scale("Y", 32))
 nextBtn.Position = UDim2.new(0.6, scale("X", 2), 1, -scale("Y", 36))
 nextBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-nextBtn.Text = "Next >"
+nextBtn.Text = "下一页 >"
 nextBtn.Font = Enum.Font.GothamBold
 nextBtn.TextScaled = true
 nextBtn.TextColor3 = Color3.new(1, 1, 1)
@@ -918,7 +934,7 @@ pageBox.BackgroundTransparency = 1
 pageBox.Font = Enum.Font.Gotham
 pageBox.TextScaled = true
 pageBox.TextColor3 = Color3.new(1, 1, 1)
-pageBox.Text = "1 / Enter page"
+pageBox.Text = "1 / 输入页码"
 
 local pageNotif = Instance.new("TextLabel", catalogFrame)
 pageNotif.Size = UDim2.new(0.3, 0, 0, scale("Y", 24))
@@ -946,7 +962,7 @@ local function showPage(pages)
     if isLoading then return end
     isLoading = true
 
-    pageBox.Text = "Loading..."
+    pageBox.Text = "加载中..."
     RunService.RenderStepped:Wait() -- let UI update
 
     for _, child in ipairs(scroll:GetChildren()) do
@@ -959,7 +975,7 @@ local function showPage(pages)
     if ok then
         currentList = got
     else
-        pageBox.Text = "ERROR"
+        pageBox.Text = "错误"
         isLoading = false
         return
     end
@@ -975,26 +991,27 @@ local function showPage(pages)
     end
 
     scroll.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 8)
-    pageBox.Text = tostring(currentPageNumber) .. " / Enter page"
+    pageBox.Text = tostring(currentPageNumber) .. " / 输入页码"
     updateNavVisibility()
 
     isLoading = false
 end
+
 local function fetchPagesTo(targetPage)
-local pages = getPages(currentKeyword)
-if not pages then return nil end
-for i = 2, targetPage do
-if pages.IsFinished then break end
-local ok, err = pcall(function() pages:AdvanceToNextPageAsync() end)
-if not ok then break end
-end
-return pages
+    local pages = getPages(currentKeyword)
+    if not pages then return nil end
+    for i = 2, targetPage do
+        if pages.IsFinished then break end
+        local ok, err = pcall(function() pages:AdvanceToNextPageAsync() end)
+        if not ok then break end
+    end
+    return pages
 end
 
 local function doNewSearch(keyword)
     currentKeyword = keyword or ""
     currentPageNumber = 1
-    pageBox.Text = "Loading..."
+    pageBox.Text = "加载中..."
     
     currentPages = getPages(currentKeyword)
     if currentPages then
@@ -1014,55 +1031,54 @@ end)
 
 sortBtn.MouseButton1Click:Connect(function()
     currentSortIndex = currentSortIndex % #sortModes + 1
-    sortBtn.Text = "Sort: " .. sortModes[currentSortIndex][2]
+    sortBtn.Text = "排序: " .. sortModes[currentSortIndex][2]
     doNewSearch(currentKeyword)
 end)
 
 local UserInputService = game:GetService("UserInputService")
 
 local function goNextPage()
-	if not currentPages or currentPages.IsFinished then return end
-	local ok, err = pcall(function()
-		currentPages:AdvanceToNextPageAsync()
-	end)
-	if ok then
-		currentPageNumber += 1
-		showPage(currentPages)
-	else
-		local targetPage = currentPageNumber + 1
-		local fresh = fetchPagesTo(targetPage)
-		if fresh then
-			currentPages = fresh
-			currentPageNumber = math.min(targetPage, currentPageNumber + 1)
-			showPage(currentPages)
-		end
-	end
+    if not currentPages or currentPages.IsFinished then return end
+    local ok, err = pcall(function()
+        currentPages:AdvanceToNextPageAsync()
+    end)
+    if ok then
+        currentPageNumber += 1
+        showPage(currentPages)
+    else
+        local targetPage = currentPageNumber + 1
+        local fresh = fetchPagesTo(targetPage)
+        if fresh then
+            currentPages = fresh
+            currentPageNumber = math.min(targetPage, currentPageNumber + 1)
+            showPage(currentPages)
+        end
+    end
 end
 
 local function goPrevPage()
-	if not currentPages or currentPageNumber <= 1 then return end
-	local ok, err = pcall(function()
-		currentPages:AdvanceToPreviousPageAsync()
-	end)
-	if ok then
-		currentPageNumber = math.max(1, currentPageNumber - 1)
-		showPage(currentPages)
-	else
-		local targetPage = math.max(1, currentPageNumber - 1)
-		local fresh = fetchPagesTo(targetPage)
-		if fresh then
-			currentPages = fresh
-			currentPageNumber = targetPage
-			showPage(currentPages)
-		end
-	end
+    if not currentPages or currentPageNumber <= 1 then return end
+    local ok, err = pcall(function()
+        currentPages:AdvanceToPreviousPageAsync()
+    end)
+    if ok then
+        currentPageNumber = math.max(1, currentPageNumber - 1)
+        showPage(currentPages)
+    else
+        local targetPage = math.max(1, currentPageNumber - 1)
+        local fresh = fetchPagesTo(targetPage)
+        if fresh then
+            currentPages = fresh
+            currentPageNumber = targetPage
+            showPage(currentPages)
+        end
+    end
 end
 
 nextBtn.MouseButton1Click:Connect(goNextPage)
 prevBtn.MouseButton1Click:Connect(goPrevPage)
 
 UserInputService.InputBegan:Connect(function(input)
-    
     if input.KeyCode == Enum.KeyCode.Right then
         goNextPage()
     elseif input.KeyCode == Enum.KeyCode.Left then
@@ -1075,27 +1091,26 @@ pageBox.FocusLost:Connect(function(enterPressed)
     local text = pageBox.Text:gsub("%s+", "")
     local num = tonumber(text:match("%d+"))
     if not num or num < 1 then
-    
-        pageNotif.Text = "Invalid page number"
+        pageNotif.Text = "无效的页码"
         pageNotif.Visible = true
         task.delay(2, function() if pageNotif then pageNotif.Visible = false end end)
-        pageBox.Text = "Page " .. tostring(currentPageNumber)
+        pageBox.Text = "页码 " .. tostring(currentPageNumber)
         return
     end
     local targetPage = math.floor(num)
     if targetPage == currentPageNumber then
-        pageBox.Text = "Page " .. tostring(currentPageNumber)
+        pageBox.Text = "页码 " .. tostring(currentPageNumber)
         return
     end
-    pageBox.Text = "Loading..."
+    pageBox.Text = "加载中..."
     local ok, pages = pcall(function()
         return fetchPagesTo(targetPage)
     end)
     if not ok or not pages then
-        pageNotif.Text = "Unable to fetch page"
+        pageNotif.Text = "无法获取页面"
         pageNotif.Visible = true
         task.delay(2, function() if pageNotif then pageNotif.Visible = false end end)
-        pageBox.Text = "Page " .. tostring(currentPageNumber)
+        pageBox.Text = "页码 " .. tostring(currentPageNumber)
         return
     end
     currentPages = pages
@@ -1127,7 +1142,7 @@ local function createSavedCard(item)
     name.Size = UDim2.new(1, -scale("X", 10), 0, scale("Y", 28))
     name.Position = UDim2.new(0, scale("X", 5), 0, scale("Y", 100))
     name.BackgroundTransparency = 1
-    name.Text = item.Name or "Unknown"
+    name.Text = item.Name or "未知"
     name.TextScaled = true
     name.TextWrapped = true
     name.Font = Enum.Font.GothamBold
@@ -1137,7 +1152,7 @@ local function createSavedCard(item)
     playBtn.Size = UDim2.new(0.45, -scale("X", 5), 0, scale("Y", 24))
     playBtn.Position = UDim2.new(0, scale("X", 5), 1, -scale("Y", 29))
     playBtn.BackgroundColor3 = Color3.fromRGB(60, 180, 60)
-    playBtn.Text = "Play"
+    playBtn.Text = "播放"
     playBtn.Font = Enum.Font.GothamBold
     playBtn.TextScaled = true
     playBtn.TextColor3 = Color3.new(1, 1, 1)
@@ -1150,33 +1165,32 @@ local function createSavedCard(item)
     removeBtn.Size = UDim2.new(0.45, -scale("X", 5), 0, scale("Y", 24))
     removeBtn.Position = UDim2.new(0.55, 0, 1, -scale("Y", 29))
     removeBtn.BackgroundColor3 = Color3.fromRGB(180, 60, 60)
-    removeBtn.Text = "Remove"
+    removeBtn.Text = "移除"
     removeBtn.Font = Enum.Font.GothamBold
     removeBtn.TextScaled = true
     removeBtn.TextColor3 = Color3.new(1, 1, 1)
     removeBtn.Parent = card
     createCorner(removeBtn, 6)
     
-    
-local copyBtn = Instance.new("TextButton")
-copyBtn.Size = UDim2.new(0, scale("X", 40), 0, scale("Y", 24))
-copyBtn.Position = UDim2.new(0.5, -scale("X", 20), 0, scale("Y", 5))
-copyBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 150)
-copyBtn.Text = "Copy AnimId"
-copyBtn.Font = Enum.Font.GothamBold
-copyBtn.TextScaled = true
-copyBtn.TextColor3 = Color3.new(1, 1, 1)
-copyBtn.Parent = card
-createCorner(copyBtn, 6)
+    local copyBtn = Instance.new("TextButton")
+    copyBtn.Size = UDim2.new(0, scale("X", 40), 0, scale("Y", 24))
+    copyBtn.Position = UDim2.new(0.5, -scale("X", 20), 0, scale("Y", 5))
+    copyBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 150)
+    copyBtn.Text = "复制AnimId"
+    copyBtn.Font = Enum.Font.GothamBold
+    copyBtn.TextScaled = true
+    copyBtn.TextColor3 = Color3.new(1, 1, 1)
+    copyBtn.Parent = card
+    createCorner(copyBtn, 6)
 
-copyBtn.MouseButton1Click:Connect(function()
-    if setclipboard then
-        setclipboard(item.AnimationId:gsub("rbxassetid://", ""))
-    end
-    copyBtn.Text = "Copied!"
-    task.wait(0.7)
-    copyBtn.Text = "Copy AnimId"
-end)
+    copyBtn.MouseButton1Click:Connect(function()
+        if setclipboard then
+            setclipboard(item.AnimationId:gsub("rbxassetid://", ""))
+        end
+        copyBtn.Text = "已复制!"
+        task.wait(0.7)
+        copyBtn.Text = "复制AnimId"
+    end)
     local favBtn = Instance.new("TextButton")
     favBtn.Size = UDim2.new(0, scale("X", 24), 0, scale("Y", 24))
     favBtn.Position = UDim2.new(1, -scale("X", 30), 0, scale("Y", 5))
@@ -1255,41 +1269,466 @@ local function toggleGui()
     targetGui.Enabled = not targetGui.Enabled
 end
 
-    local screonGui = Instance.new("ScreenGui")
-    screonGui.Name = "ToggleButtonGui"
-    screonGui.ResetOnSpawn = false
-    screonGui.Parent = CoreGui
-    screonGui.Enabled = true
-    local btn = Instance.new("TextButton")
-    btn.Parent = screonGui
-    btn.Text = "G"
-    btn.Font = Enum.Font.GothamSemibold
-    btn.TextScaled = true
-    btn.Size = UDim2.new(0, 50, 0, 50)
-    btn.Position = UDim2.new(0, 20, 0.5, -50)
-    btn.AnchorPoint = Vector2.new(0, 0.5)
-    btn.Active = true
-    pcall(function() btn.Draggable = true end)
-    local aspect = Instance.new("UIAspectRatioConstraint")
-    aspect.Parent = btn
-    aspect.AspectRatio = 1
-    local corner = Instance.new("UICorner")
-    corner.Parent = btn
-    corner.CornerRadius = UDim.new(0, 12)
-    btn.MouseButton1Click:Connect(toggleGui)
+local screonGui = Instance.new("ScreenGui")
+screonGui.Name = "ToggleButtonGui"
+screonGui.ResetOnSpawn = false
+screonGui.Parent = CoreGui
+screonGui.Enabled = true
+local btn = Instance.new("TextButton")
+btn.Parent = screonGui
+btn.Text = "G"
+btn.Font = Enum.Font.GothamSemibold
+btn.TextScaled = true
+btn.Size = UDim2.new(0, 50, 0, 50)
+btn.Position = UDim2.new(0, 20, 0.5, -50)
+btn.AnchorPoint = Vector2.new(0, 0.5)
+btn.Active = true
+pcall(function() btn.Draggable = true end)
+local aspect = Instance.new("UIAspectRatioConstraint")
+aspect.Parent = btn
+aspect.AspectRatio = 1
+local corner = Instance.new("UICorner")
+corner.Parent = btn
+corner.CornerRadius = UDim.new(0, 12)
+btn.MouseButton1Click:Connect(toggleGui)
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
-        if gameProcessed then return end
-        if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.G then
-            toggleGui()
+    if gameProcessed then return end
+    if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == Enum.KeyCode.G then
+        toggleGui()
+    end
+end)
+
+gui.Enabled = true
+refreshSavedTab()
+
+-- 脚本结束
+-- 在原有代码的基础上添加动画包功能
+
+-- 在标签按钮部分添加动画包标签
+local animationPackTabBtn = Instance.new("TextButton")
+animationPackTabBtn.Size = UDim2.new(0.3, 0, 0, scale("Y", 24))
+animationPackTabBtn.Position = UDim2.new(0.65, 0, 0, scale("Y", 40))
+animationPackTabBtn.BackgroundColor3 = Color3.fromRGB(120, 60, 180)
+animationPackTabBtn.Text = "动画包"
+animationPackTabBtn.TextColor3 = Color3.new(1, 1, 1)
+animationPackTabBtn.Font = Enum.Font.GothamBold
+animationPackTabBtn.TextScaled = true
+animationPackTabBtn.Parent = mainContainer
+createCorner(animationPackTabBtn, 6)
+
+-- 创建动画包框架
+local animationPackFrame = Instance.new("Frame")
+animationPackFrame.Size = UDim2.new(0.6, -scale("X", 10), 1, -scale("Y", 70))
+animationPackFrame.Position = UDim2.new(0, scale("X", 5), 0, scale("Y", 70))
+animationPackFrame.BackgroundTransparency = 1
+animationPackFrame.Visible = false
+animationPackFrame.Parent = mainContainer
+
+-- 动画包搜索框
+local animationPackSearch = Instance.new("TextBox")
+animationPackSearch.Size = UDim2.new(0.6, -scale("X", 8), 0, scale("Y", 28))
+animationPackSearch.Position = UDim2.new(0, scale("X", 8), 0, 0)
+animationPackSearch.PlaceholderText = "搜索动画包..."
+animationPackSearch.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
+animationPackSearch.TextColor3 = Color3.new(1, 1, 1)
+animationPackSearch.Font = Enum.Font.Gotham
+animationPackSearch.TextScaled = true
+animationPackSearch.ClearTextOnFocus = false
+animationPackSearch.Text = ""
+animationPackSearch.Parent = animationPackFrame
+createCorner(animationPackSearch, 6)
+
+-- 动画包刷新按钮
+local animationPackRefreshBtn = Instance.new("TextButton")
+animationPackRefreshBtn.Size = UDim2.new(0.2, -scale("X", 4), 0, scale("Y", 28))
+animationPackRefreshBtn.Position = UDim2.new(0.6, scale("X", 4), 0, 0)
+animationPackRefreshBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 220)
+animationPackRefreshBtn.Text = "刷新"
+animationPackRefreshBtn.Font = Enum.Font.GothamBold
+animationPackRefreshBtn.TextScaled = true
+animationPackRefreshBtn.TextColor3 = Color3.new(1, 1, 1)
+animationPackRefreshBtn.Parent = animationPackFrame
+createCorner(animationPackRefreshBtn, 6)
+
+-- 动画包分类下拉菜单
+local animationPackCategoryBtn = Instance.new("TextButton")
+animationPackCategoryBtn.Size = UDim2.new(0.2, -scale("X", 8), 0, scale("Y", 28))
+animationPackCategoryBtn.Position = UDim2.new(0.8, scale("X", 4), 0, 0)
+animationPackCategoryBtn.BackgroundColor3 = Color3.fromRGB(120, 80, 160)
+animationPackCategoryBtn.Text = "分类: 全部"
+animationPackCategoryBtn.Font = Enum.Font.GothamBold
+animationPackCategoryBtn.TextScaled = true
+animationPackCategoryBtn.TextColor3 = Color3.new(1, 1, 1)
+animationPackCategoryBtn.Parent = animationPackFrame
+createCorner(animationPackCategoryBtn, 6)
+
+-- 动画包滚动框架
+local animationPackScroll = Instance.new("ScrollingFrame")
+animationPackScroll.Size = UDim2.new(1, -scale("X", 16), 1, -scale("Y", 40))
+animationPackScroll.Position = UDim2.new(0, scale("X", 8), 0, scale("Y", 36))
+animationPackScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+animationPackScroll.ScrollBarThickness = 6
+animationPackScroll.BackgroundTransparency = 1
+animationPackScroll.Parent = animationPackFrame
+
+-- 动画包布局
+local animationPackLayout = Instance.new("UIGridLayout")
+animationPackLayout.CellSize = UDim2.new(0, scale("X", 140), 0, scale("Y", 220))
+animationPackLayout.CellPadding = UDim2.new(0, scale("X", 8), 0, scale("Y", 8))
+animationPackLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+animationPackLayout.Parent = animationPackScroll
+
+animationPackLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    animationPackScroll.CanvasSize = UDim2.new(0, 0, 0, animationPackLayout.AbsoluteContentSize.Y + 10)
+end)
+
+-- 动画包空状态提示
+local animationPackEmptyLabel = Instance.new("TextLabel")
+animationPackEmptyLabel.Size = UDim2.new(1, 0, 0, scale("Y", 36))
+animationPackEmptyLabel.Position = UDim2.new(0, 0, 0.5, -scale("Y", 18))
+animationPackEmptyLabel.BackgroundTransparency = 1
+animationPackEmptyLabel.Text = "搜索动画包..."
+animationPackEmptyLabel.TextColor3 = Color3.new(1, 1, 1)
+animationPackEmptyLabel.Font = Enum.Font.GothamBold
+animationPackEmptyLabel.TextScaled = true
+animationPackEmptyLabel.Visible = true
+animationPackEmptyLabel.Parent = animationPackScroll
+
+-- 动画包分类
+local animationPackCategories = {
+    {name = "全部", value = Enum.CatalogCategoryFilter.All},
+    {name = "战斗", value = Enum.CatalogCategoryFilter.Combat},
+    {name = "休闲", value = Enum.CatalogCategoryFilter.Casual},
+    {name = "舞蹈", value = Enum.CatalogCategoryFilter.Dance},
+    {name = "表情", value = Enum.CatalogCategoryFilter.Emote},
+    {name = "动作", value = Enum.CatalogCategoryFilter.Movement}
+}
+local currentAnimationPackCategory = 1
+
+-- 动画包数据
+local animationPacks = {}
+local savedAnimationPacks = {}
+
+-- 创建动画包卡片函数
+local function createAnimationPackCard(packData)
+    local card = Instance.new("Frame")
+    card.Size = UDim2.new(0, scale("X", 140), 0, scale("Y", 220))
+    card.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+    createCorner(card, 8)
+    
+    -- 动画包缩略图
+    local thumbnail = Instance.new("ImageLabel")
+    thumbnail.Size = UDim2.new(1, -scale("X", 10), 0, scale("Y", 100))
+    thumbnail.Position = UDim2.new(0, scale("X", 5), 0, scale("Y", 5))
+    thumbnail.BackgroundTransparency = 1
+    thumbnail.ScaleType = Enum.ScaleType.Fit
+    pcall(function()
+        thumbnail.Image = "rbxthumb://type=Asset&id=" .. tostring(packData.Id) .. "&w=150&h=150"
+    end)
+    thumbnail.Parent = card
+    createCorner(thumbnail, 6)
+    
+    -- 动画包名称
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Size = UDim2.new(1, -scale("X", 10), 0, scale("Y", 40))
+    nameLabel.Position = UDim2.new(0, scale("X", 5), 0, scale("Y", 110))
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Text = packData.Name or "未知动画包"
+    nameLabel.TextColor3 = Color3.new(1, 1, 1)
+    nameLabel.Font = Enum.Font.GothamBold
+    nameLabel.TextScaled = true
+    nameLabel.TextWrapped = true
+    nameLabel.Parent = card
+    
+    -- 动画包信息
+    local infoLabel = Instance.new("TextLabel")
+    infoLabel.Size = UDim2.new(1, -scale("X", 10), 0, scale("Y", 20))
+    infoLabel.Position = UDim2.new(0, scale("X", 5), 0, scale("Y", 155))
+    infoLabel.BackgroundTransparency = 1
+    infoLabel.Text = string.format("包含 %d 个动画", packData.AnimationCount or 0)
+    infoLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+    infoLabel.Font = Enum.Font.Gotham
+    infoLabel.TextScaled = true
+    infoLabel.Parent = card
+    
+    -- 浏览按钮
+    local browseBtn = Instance.new("TextButton")
+    browseBtn.Size = UDim2.new(0.9, 0, 0, scale("Y", 24))
+    browseBtn.Position = UDim2.new(0.05, 0, 1, -scale("Y", 55))
+    browseBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+    browseBtn.Text = "浏览动画"
+    browseBtn.TextColor3 = Color3.new(1, 1, 1)
+    browseBtn.Font = Enum.Font.GothamBold
+    browseBtn.TextScaled = true
+    browseBtn.Parent = card
+    createCorner(browseBtn, 6)
+    
+    -- 保存按钮
+    local saveBtn = Instance.new("TextButton")
+    saveBtn.Size = UDim2.new(0.9, 0, 0, scale("Y", 24))
+    saveBtn.Position = UDim2.new(0.05, 0, 1, -scale("Y", 25))
+    saveBtn.BackgroundColor3 = Color3.fromRGB(60, 180, 80)
+    saveBtn.Text = "保存包"
+    saveBtn.TextColor3 = Color3.new(1, 1, 1)
+    saveBtn.Font = Enum.Font.GothamBold
+    saveBtn.TextScaled = true
+    saveBtn.Parent = card
+    createCorner(saveBtn, 6)
+    
+    -- 浏览按钮点击事件
+    browseBtn.MouseButton1Click:Connect(function()
+        -- 显示动画包详情弹窗
+        showAnimationPackDetails(packData)
+    end)
+    
+    -- 保存按钮点击事件
+    saveBtn.MouseButton1Click:Connect(function()
+        local alreadySaved = false
+        for _, saved in ipairs(savedAnimationPacks) do
+            if saved.Id == packData.Id then
+                alreadySaved = true
+                break
+            end
+        end
+        
+        if not alreadySaved then
+            table.insert(savedAnimationPacks, {
+                Id = packData.Id,
+                Name = packData.Name,
+                Thumbnail = packData.Thumbnail,
+                AnimationCount = packData.AnimationCount,
+                Animations = packData.Animations or {}
+            })
+            saveAnimationPacksToData()
+            saveBtn.Text = "已保存!"
+            saveBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+            task.wait(1)
+            saveBtn.Text = "保存包"
+            saveBtn.BackgroundColor3 = Color3.fromRGB(60, 180, 80)
+        else
+            saveBtn.Text = "已存在"
+            task.wait(0.7)
+            saveBtn.Text = "保存包"
         end
     end)
     
+    return card
+end
 
+-- 显示动画包详情弹窗
+local function showAnimationPackDetails(packData)
+    -- 创建详情弹窗
+    local detailsFrame = Instance.new("Frame")
+    detailsFrame.Size = UDim2.new(0, scale("X", 500), 0, scale("Y", 400))
+    detailsFrame.Position = UDim2.new(0.5, -scale("X", 250), 0.5, -scale("Y", 200))
+    detailsFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    detailsFrame.ZIndex = 10
+    detailsFrame.Parent = gui
+    createCorner(detailsFrame, 12)
+    
+    -- 使弹窗可拖动
+    detailsFrame.Active = true
+    detailsFrame.Draggable = true
+    
+    -- 关闭按钮
+    local closeBtn = Instance.new("TextButton")
+    closeBtn.Size = UDim2.new(0, scale("X", 30), 0, scale("Y", 30))
+    closeBtn.Position = UDim2.new(1, -scale("X", 35), 0, scale("Y", 5))
+    closeBtn.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+    closeBtn.Text = "X"
+    closeBtn.TextColor3 = Color3.new(1, 1, 1)
+    closeBtn.Font = Enum.Font.GothamBold
+    closeBtn.TextScaled = true
+    closeBtn.ZIndex = 11
+    closeBtn.Parent = detailsFrame
+    createCorner(closeBtn, 15)
+    
+    -- 动画包标题
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Size = UDim2.new(1, -scale("X", 40), 0, scale("Y", 40))
+    titleLabel.Position = UDim2.new(0, scale("X", 10), 0, scale("Y", 10))
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.Text = packData.Name or "动画包详情"
+    titleLabel.TextColor3 = Color3.new(1, 1, 1)
+    titleLabel.Font = Enum.Font.GothamBold
+    titleLabel.TextScaled = true
+    titleLabel.ZIndex = 11
+    titleLabel.Parent = detailsFrame
+    
+    -- 动画包缩略图
+    local largeThumbnail = Instance.new("ImageLabel")
+    largeThumbnail.Size = UDim2.new(0, scale("X", 150), 0, scale("Y", 150))
+    largeThumbnail.Position = UDim2.new(0, scale("X", 10), 0, scale("Y", 60))
+    largeThumbnail.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    largeThumbnail.ScaleType = Enum.ScaleType.Fit
+    pcall(function()
+        largeThumbnail.Image = "rbxthumb://type=Asset&id=" .. tostring(packData.Id) .. "&w=300&h=300"
+    end)
+    largeThumbnail.ZIndex = 11
+    largeThumbnail.Parent = detailsFrame
+    createCorner(largeThumbnail, 8)
+    
+    -- 动画列表标题
+    local animationsLabel = Instance.new("TextLabel")
+    animationsLabel.Size = UDim2.new(1, -scale("X", 20), 0, scale("Y", 30))
+    animationsLabel.Position = UDim2.new(0, scale("X", 10), 0, scale("Y", 220))
+    animationsLabel.BackgroundTransparency = 1
+    animationsLabel.Text = "包含的动画:"
+    animationsLabel.TextColor3 = Color3.new(1, 1, 1)
+    animationsLabel.Font = Enum.Font.GothamBold
+    animationsLabel.TextScaled = true
+    animationsLabel.TextXAlignment = Enum.TextXAlignment.Left
+    animationsLabel.ZIndex = 11
+    animationsLabel.Parent = detailsFrame
+    
+    -- 动画列表滚动框
+    local animationsScroll = Instance.new("ScrollingFrame")
+    animationsScroll.Size = UDim2.new(1, -scale("X", 20), 0, scale("Y", 150))
+    animationsScroll.Position = UDim2.new(0, scale("X", 10), 0, scale("Y", 255))
+    animationsScroll.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    animationsScroll.ScrollBarThickness = 6
+    animationsScroll.ZIndex = 11
+    animationsScroll.Parent = detailsFrame
+    createCorner(animationsScroll, 8)
+    
+    -- 动画列表布局
+    local animationsLayout = Instance.new("UIListLayout")
+    animationsLayout.Padding = UDim.new(0, 5)
+    animationsLayout.Parent = animationsScroll
+    
+    -- 加载动画包内容
+    local function loadPackAnimations()
+        for _, child in ipairs(animationsScroll:GetChildren()) do
+            if child:IsA("Frame") then
+                child:Destroy()
+            end
+        end
+        
+        -- 模拟加载动画（实际中需要从Roblox API获取）
+        local sampleAnimations = {
+            {Id = 123456, Name = "动画1"},
+            {Id = 123457, Name = "动画2"},
+            {Id = 123458, Name = "动画3"},
+            {Id = 123459, Name = "动画4"}
+        }
+        
+        for i, anim in ipairs(sampleAnimations) do
+            local animFrame = Instance.new("Frame")
+            animFrame.Size = UDim2.new(1, -scale("X", 10), 0, scale("Y", 40))
+            animFrame.Position = UDim2.new(0, scale("X", 5), 0, scale("Y", (i-1)*45))
+            animFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+            animFrame.ZIndex = 12
+            animFrame.Parent = animationsScroll
+            createCorner(animFrame, 6)
+            
+            local animName = Instance.new("TextLabel")
+            animName.Size = UDim2.new(0.6, 0, 1, 0)
+            animName.Position = UDim2.new(0, scale("X", 10), 0, 0)
+            animName.BackgroundTransparency = 1
+            animName.Text = anim.Name
+            animName.TextColor3 = Color3.new(1, 1, 1)
+            animName.Font = Enum.Font.Gotham
+            animName.TextScaled = true
+            animName.TextXAlignment = Enum.TextXAlignment.Left
+            animName.ZIndex = 13
+            animName.Parent = animFrame
+            
+            local playBtn = Instance.new("TextButton")
+            playBtn.Size = UDim2.new(0.3, 0, 0.7, 0)
+            playBtn.Position = UDim2.new(0.7, 0, 0.15, 0)
+            playBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 50)
+            playBtn.Text = "播放"
+            playBtn.TextColor3 = Color3.new(1, 1, 1)
+            playBtn.Font = Enum.Font.GothamBold
+            playBtn.TextScaled = true
+            playBtn.ZIndex = 13
+            playBtn.Parent = animFrame
+            createCorner(playBtn, 6)
+            
+            playBtn.MouseButton1Click:Connect(function()
+                LoadTrack(anim.Id)
+            end)
+        end
+        
+        animationsScroll.CanvasSize = UDim2.new(0, 0, 0, #sampleAnimations * 45)
+    end
+    
+    -- 关闭按钮事件
+    closeBtn.MouseButton1Click:Connect(function()
+        detailsFrame:Destroy()
+    end)
+    
+    -- 加载动画
+    loadPackAnimations()
+end
 
+-- 搜索动画包函数
+local function searchAnimationPacks(keyword, category)
+    animationPackEmptyLabel.Text = "搜索中..."
+    animationPackEmptyLabel.Visible = true
+    
+    -- 清空现有内容
+    for _, child in ipairs(animationPackScroll:GetChildren()) do
+        if child:IsA("Frame") then
+            child:Destroy()
+        end
+    end
+    
+    -- 模拟搜索动画包（实际中需要调用Roblox API）
+    local samplePacks = {
+        {
+            Id = 111111,
+            Name = "战斗动画包",
+            Thumbnail = "rbxassetid://111111",
+            AnimationCount = 5,
+            Category = "战斗"
+        },
+        {
+            Id = 111112,
+            Name = "舞蹈动画包", 
+            Thumbnail = "rbxassetid://111112",
+            AnimationCount = 8,
+            Category = "舞蹈"
+        },
+        {
+            Id = 111113,
+            Name = "表情动画包",
+            Thumbnail = "rbxassetid://111113",
+            AnimationCount = 12,
+            Category = "表情"
+        },
+        {
+            Id = 111114,
+            Name = "休闲动画包",
+            Thumbnail = "rbxassetid://111114",
+            AnimationCount = 6,
+            Category = "休闲"
+        }
+    }
+    
+    -- 过滤结果
+    local filteredPacks = {}
+    for _, pack in ipairs(samplePacks) do
+        local matchesCategory = category == 1 or animationPackCategories[category].name == pack.Category
+        local matchesKeyword = keyword == "" or pack.Name:lower():find(keyword:lower())
+        
+        if matchesCategory and matchesKeyword then
+            table.insert(filteredPacks, pack)
+        end
+    end
+    
+    -- 显示结果
+    if #filteredPacks > 0 then
+        animationPackEmptyLabel.Visible = false
+        for _, pack in ipairs(filteredPacks) do
+            createAnimationPackCard(pack).Parent = animationPackScroll
+        end
+    else
+        animationPackEmptyLabel.Text = "未找到动画包"
+        animationPackEmptyLabel.Visible = true
+    end
+end
 
-
-gui.Enabled = true
-
-
-refreshSavedTab() 
+-- 保存动画包数据
+local function save
