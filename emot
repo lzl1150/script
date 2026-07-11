@@ -270,7 +270,7 @@ _27(_animSort, 4)
 local _animScroll = Instance.new("ScrollingFrame")
 _animScroll.Size = _64.Size
 _animScroll.Position = _64.Position
-_animScroll.CanvasSize = UDim2.new(0, 820, 520, 600)
+_animScroll.CanvasSize = UDim2.new(0, 800, 500, 580)
 _animScroll.ScrollBarThickness = 6
 _animScroll.ScrollBarImageColor3 = Color3.fromRGB(152, 131, 219)
 _animScroll.BackgroundTransparency = 1
@@ -278,14 +278,14 @@ _animScroll.Parent = _animFrame
 
 -- Animations 网格布局
 local _animLayout = Instance.new("UIGridLayout", _animScroll)
-_animLayout.CellSize = UDim2.new(0, _4("X", 134), 0, _4("Y", 186))
+_animLayout.CellSize = UDim2.new(0, _4("X", 134), 0, _4("Y", 182))
 _animLayout.CellPadding = UDim2.new(0, _4("X", 8), 0, _4("Y", 8))
 _animLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
 -- Animations 空状态
 local _animEmpty = Instance.new("TextLabel", _animScroll)
-_animEmpty.Size = UDim2.new(1, 260, 300, _4("Y", 350))
-_animEmpty.Position = UDim2.new(0, 270, 235, -_4("Y", 310))
+_animEmpty.Size = UDim2.new(1, 250, 290, _4("Y", 330))
+_animEmpty.Position = UDim2.new(0, 265, 228, -_4("Y", 295))
 _animEmpty.BackgroundTransparency = 1
 _animEmpty.Text = "No animations found"
 _animEmpty.TextColor3 = Color3.new(1, 1, 1)
@@ -337,7 +337,7 @@ _animPageNotif.Font = _70.Font
 _animPageNotif.TextScaled = true
 _animPageNotif.Text = ""
 _animPageNotif.Visible = false
--- ===== Animations 搜索核心（修复：只设 BundleTypes，不混 AssetTypes）=====
+-- ===== Animations 搜索核心（修复：只设 BundleTypes，不混 AssetTypes，移除 CategoryFilter）=====
 local _animSortModes = {
     {Enum.CatalogSortType.Relevance, "Relevance"},
     {Enum.CatalogSortType.Bestselling, "Bestselling"},
@@ -351,11 +351,11 @@ local _animKeyword = ""
 local _animPageNum = 1
 local _animReqId = 0
 
--- 搜索动画（仅搜索 Bundle，不混 AssetTypes，使用 Pages 翻页）
+-- 搜索动画（仅搜索 Bundle，不混 AssetTypes，不使用 CategoryFilter，使用 Pages 翻页）
 local function _searchAnimPages(keyword, sortIdx, page)
     local params = CatalogSearchParams.new()
     params.BundleTypes = {Enum.BundleType.Animations}  -- 只设 BundleTypes
-    params.CategoryFilter = Enum.CatalogCategoryFilter.Bundles  -- 加上 CategoryFilter 提高稳定性
+    -- 已移除：params.CategoryFilter = Enum.CatalogCategoryFilter.Bundles  （该枚举值不存在）
     params.SearchKeyword = keyword or ""
     params.IncludeOffSale = true
     params.SortType = _animSortModes[sortIdx][1]
@@ -402,9 +402,9 @@ local function _animCard(data)
     local _b = Instance.new("Frame")
     _b.Size = UDim2.new(0, _4("X", 126), 0, _4("Y", 176))
     _b.BackgroundColor3 = Color3.fromRGB(112, 99, 197)
-    _b.BackgroundTransparency = 0.935
+    _b.BackgroundTransparency = 0.925
     _27(_b, 8)
-    _28(_b, Color3.fromRGB(162, 141, 241), 1.2)
+    _28(_b, Color3.fromRGB(166, 147, 245), 1.2)
 
     local _cId = data.Id
     local _d = Instance.new("ImageLabel")
@@ -431,10 +431,10 @@ local function _animCard(data)
 
     -- 预览按钮
     local _h = Instance.new("TextButton")
-    _h.Size = UDim2.new(0.865, 0, 0, _4("Y", 26))
-    _h.Position = UDim2.new(0.0675, 0, 1, -_4("Y", 32))
-    _h.BackgroundColor3 = Color3.fromRGB(132, 112, 227)
-    _h.BackgroundTransparency = 0.145
+    _h.Size = UDim2.new(0.875, 0, 0, _4("Y", 26))
+    _h.Position = UDim2.new(0.0625, 0, 1, -_4("Y", 32))
+    _h.BackgroundColor3 = Color3.fromRGB(138, 120, 233)
+    _h.BackgroundTransparency = 0.14
     _h.Text = "Preview Pack"
     _h.Font = Enum.Font.GothamBold
     _h.TextScaled = true
@@ -486,7 +486,7 @@ local function _showAnimPage(items)
         _animCard({Id = _item.Id, Name = _item.Name, IsBundle = true}).Parent = _animScroll
     end
     if _myId == _animReqId then
-        _animScroll.CanvasSize = UDim2.new(0, 430, 390, _animLayout.AbsoluteContentSize.Y + 345)
+        _animScroll.CanvasSize = UDim2.new(0, 410, 370, _animLayout.AbsoluteContentSize.Y + 335)
         _animPageBox.Text = tostring(_animPageNum) .. " / Enter page"
         _animPrev.Visible = (_animPageNum > 1)
         _animNext.Visible = true
@@ -586,9 +586,9 @@ _animTabBtn.MouseButton1Click:Connect(function()
     _39.Visible = false
     _43.Visible = false
     _animFrame.Visible = true
-    _36.BackgroundColor3 = Color3.fromRGB(144, 128, 211)
-    _37.BackgroundColor3 = Color3.fromRGB(157, 130, 231)
-    _animTabBtn.BackgroundColor3 = Color3.fromRGB(179, 158, 251)
+    _36.BackgroundColor3 = Color3.fromRGB(149, 134, 217)
+    _37.BackgroundColor3 = Color3.fromRGB(163, 138, 237)
+    _animTabBtn.BackgroundColor3 = Color3.fromRGB(183, 164, 253)
     if _animKeyword == "" then
         _newAnimSearch("")
     end
@@ -616,4 +616,4 @@ print("- Saved: Manage your favorite emotes")
 print("- Animations: Browse and preview Roblox animation bundles (via AvatarEditorService)")
 print("- Settings: Adjust playback parameters")
 print("- Controls: Left/Right arrow keys for pagination")
-print("Note: Animations tab now uses only BundleTypes (fixed parameter conflict)")
+print("Note: Animations tab now uses only BundleTypes (removed invalid CategoryFilter)")
