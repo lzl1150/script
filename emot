@@ -192,32 +192,6 @@ task.spawn(function()
 		for _, part in pairs(character:GetDescendants()) do
 			addPart(part)
 		end
-
-		local descendantConnection = character.DescendantAdded:Connect(addPart)
-
-		local heartbeatConnection
-		heartbeatConnection = RunService.Heartbeat:Connect(function()
-			if not character or not character.Parent then
-				heartbeatConnection:Disconnect()
-				descendantConnection:Disconnect()
-				return
-			end
-
-			for i = 1, #bodyParts do
-				local p = bodyParts[i]
-				if p and p.Parent then
-					p.CanCollide = false
-				end
-			end
-		end)
-	end
-
-	if player.Character then
-		setupCollision(player.Character)
-	end
-
-	player.CharacterAdded:Connect(setupCollision)
-end)
 -- ===== 新增：Animations 标签按钮 =====
 local _animTabBtn = Instance.new("TextButton")
 _animTabBtn.Size = UDim2.new(0.162, 0, 0, _4("Y", 24))
@@ -363,29 +337,78 @@ local _animSortModes = {
 }
 local _animSortIdx = 1
 local _animKeyword = ""
-local _animPages = nil
 local _animPageNum = 1
 local _animReqId = 0
 
--- Animations 搜索函数（使用 Animation 类型）
-local function _getAnimPages(_a)
-    if _isR6 then
-        return {IsFinished=true, GetCurrentPage=function() return {{Id=115314801778772, Name="Dance If Youre The Best", AssetId=115314801778772}} end, AdvanceToNextPageAsync=function() end}
+-- 排序映射到 HTTP API 的参数
+local _animSortToHttp = {
+    [1] = "",            -- Relevance（默认）
+    [2] = "-Price",      -- PriceHighToLow
+    [3] = "Price",       -- PriceLowToHigh
+    [4] = "-Favorites",  -- MostFavorited
+    [5] = "-Created",    -- RecentlyCreated
+    [6] = "-Sales",      -- Bestselling
+}
+
+-- HTTP 搜索 Animation（走 catalog.roblox.com，这才是商城 Animations 栏目的真 API）
+local function _getAnimPages(_keyword, _page)
+    _page = _page or 1
+    local limit = 12
+    local cursor = (_page - 1) * limit
+    local sortParam = _animSortToHttp[_animSortIdx] or ""
+    local url = string.format(
+        "https://catalog.roblox.com/v1/search/items?category=Animation&limit=%d&cursor=%d&keyword=%s&sort=%s",
+        limit, cursor, _keyword or "", sortParam
+    )
+    -- 执行器兼容：优先用 syn.request/http_request，兜底用 game:HttpGet
+    local ok, resp
+    if typeof(syn) == "table" and syn.request then
+        ok, resp = pcall(function()
+            local r = syn.request({Url = url, Method = "GET"})
+            return r.Body
+        end)
+    elseif typeof(http_request) == "function" then
+        ok, resp = pcall(function()
+            local r = http_request({Url = url, Method = "GET"})
+            return r.Body
+        end)
+    else
+        ok, resp = pcall(function()
+            return game:HttpGet(url, true)
+        end)
     end
-    local _b = CatalogSearchParams.new()
-    _b.SearchKeyword = _a or ""
-    _b.CategoryFilter = Enum.CatalogCategoryFilter.None
-    _b.SalesTypeFilter = Enum.SalesTypeFilter.All
-    _b.AssetTypes = { Enum.AvatarAssetType.Animation }
-    _b.IncludeOffSale = true
-    _b.SortType = _animSortModes[_animSortIdx][1]
-    _b.Limit = 10
-    local _c, _d = pcall(function() return _12:SearchCatalog(_b) end)
-    if not _c then return nil end
-    return _d
+    if not ok or not resp then
+        warn("[Animations] HTTP request failed")
+        return nil
+    end
+    local decodeOk, json = pcall(function() return HttpService:JSONDecode(resp) end)
+    if not decodeOk or not json then
+        warn("[Animations] JSON decode failed")
+        return nil
+    end
+    -- 转成类似 SearchCatalog 分页对象的伪结构，方便复用现有分页逻辑
+    local items = {}
+    for _, entry in ipairs(json.data or {}) do
+        table.insert(items, {
+            Id = tonumber(entry.id),
+            AssetId = tonumber(entry.id),
+            Name = entry.name or "Unknown",
+        })
+    end
+    -- 构造伪 Pages 对象，兼容现有 _showAnimPage / _fetchAnimPage 逻辑
+    local pseudoPages = {
+        _items = items,
+        _nextCursor = json.nextCursor,
+        IsFinished = not json.nextCursor or json.nextCursor == "",
+        GetCurrentPage = function(self) return self._items end,
+        AdvanceToNextPageAsync = function(self)
+            -- 由外层 _fetchAnimPage 重新调 HTTP 实现，这里留空
+        end,
+    }
+    return pseudoPages
 end
 
--- Animations 卡片创建（按钮文字为“使用”）
+-- Animations 卡片创建（按钮文字"使用"）
 local function _animCard(_a)
     local _b = Instance.new("Frame")
     _b.Size = UDim2.new(0, _4("X", 120), 0, _4("Y", 180))
@@ -433,7 +456,7 @@ local function _animCard(_a)
         _g.Text = "🛒🔗"
         _g.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
     end)
-    -- 使用按钮（替代 Play）
+    -- 使用按钮
     local _h = Instance.new("TextButton")
     _h.Size = UDim2.new(0.9, -_4("X", 5), 0, _4("Y", 24))
     _h.Position = UDim2.new(0, _4("X", 5), 1, -_4("Y", 29))
@@ -451,56 +474,49 @@ local function _animCard(_a)
     _29(_b)
     return _b
 end
--- ===== 新增：Animations 分页逻辑 =====
-local function _showAnimPage(_a)
+-- ===== 新增：Animations 分页逻辑（HTTP 版）=====
+local _animPages = nil
+
+local function _showAnimPage(_items)
     _animReqId = _animReqId + 1
     local _myId = _animReqId
     _animPageBox.Text = "Loading..."
     for _b, _c in ipairs(_animScroll:GetChildren()) do
         if _c:IsA("Frame") then _c:Destroy() end
     end
-    local _d = nil
-    local _e, _f = pcall(function() return _a:GetCurrentPage() end)
-    if _e then _d = _f else _animPageBox.Text = "ERROR" return end
-    if _myId ~= _animReqId then return end
-    if _d and #_d > 0 then
-        _animEmpty.Visible = false
-        for _g, _h in ipairs(_d) do
-            if _myId ~= _animReqId then break end
-            _animCard(_h).Parent = _animScroll
-        end
-    else
+    if not _items or #_items == 0 then
         _animEmpty.Visible = true
+        _animPageBox.Text = "0 / Enter page"
+        _animPrev.Visible = false
+        _animNext.Visible = false
+        return
+    end
+    _animEmpty.Visible = false
+    for _, _item in ipairs(_items) do
+        if _myId ~= _animReqId then break end
+        _animCard(_item).Parent = _animScroll
     end
     if _myId == _animReqId then
         _animScroll.CanvasSize = UDim2.new(0, 0, 0, _animLayout.AbsoluteContentSize.Y + 8)
         _animPageBox.Text = tostring(_animPageNum) .. " / Enter page"
         _animPrev.Visible = (_animPageNum > 1)
-        if _animPages and typeof(_animPages.IsFinished) == "boolean" then
-            _animNext.Visible = not _animPages.IsFinished
-        else
-            _animNext.Visible = true
-        end
+        _animNext.Visible = true
     end
-end
-
-local function _fetchAnimPage(_a)
-    local _b = _getAnimPages(_animKeyword)
-    if not _b then return nil end
-    for _c = 2, _a do
-        if _b.IsFinished then break end
-        local _d, _e = pcall(function() _b:AdvanceToNextPageAsync() end)
-        if not _d then break end
-    end
-    return _b
 end
 
 local function _newAnimSearch(_a)
     _animKeyword = _a or ""
     _animPageNum = 1
     _animPageBox.Text = "Loading..."
-    _animPages = _getAnimPages(_animKeyword)
-    if _animPages then _showAnimPage(_animPages) end
+    local pages = _getAnimPages(_animKeyword, 1)
+    if pages then
+        _animPages = pages
+        _showAnimPage(pages._items)
+    else
+        _animEmpty.Visible = true
+        _animEmpty.Text = "Search failed (HTTP error)"
+        _animPageBox.Text = "Error"
+    end
 end
 
 _animRefresh.MouseButton1Click:Connect(function()
@@ -516,36 +532,29 @@ _animSort.MouseButton1Click:Connect(function()
 end)
 
 local function _goAnimNext()
-    if not _animPages or _animPages.IsFinished then return end
-    local _a, _b = pcall(function() _animPages:AdvanceToNextPageAsync() end)
-    if _a then
-        _animPageNum = _animPageNum + 1
-        _showAnimPage(_animPages)
+    _animPageNum = _animPageNum + 1
+    _animPageBox.Text = "Loading..."
+    local pages = _getAnimPages(_animKeyword, _animPageNum)
+    if pages and #pages._items > 0 then
+        _animPages = pages
+        _showAnimPage(pages._items)
     else
-        local _c = _animPageNum + 1
-        local _d = _fetchAnimPage(_c)
-        if _d then
-            _animPages = _d
-            _animPageNum = _c
-            _showAnimPage(_animPages)
-        end
+        _animPageNum = math.max(1, _animPageNum - 1)
+        _animPageBox.Text = tostring(_animPageNum) .. " / Enter page"
     end
 end
 
 local function _goAnimPrev()
-    if not _animPages or _animPageNum <= 1 then return end
-    local _a, _b = pcall(function() _animPages:AdvanceToPreviousPageAsync() end)
-    if _a then
-        _animPageNum = math.max(1, _animPageNum - 1)
-        _showAnimPage(_animPages)
+    if _animPageNum <= 1 then return end
+    _animPageNum = _animPageNum - 1
+    _animPageBox.Text = "Loading..."
+    local pages = _getAnimPages(_animKeyword, _animPageNum)
+    if pages then
+        _animPages = pages
+        _showAnimPage(pages._items)
     else
-        local _c = math.max(1, _animPageNum - 1)
-        local _d = _fetchAnimPage(_c)
-        if _d then
-            _animPages = _d
-            _animPageNum = _c
-            _showAnimPage(_animPages)
-        end
+        _animPageNum = _animPageNum + 1
+        _animPageBox.Text = tostring(_animPageNum) .. " / Enter page"
     end
 end
 
@@ -569,17 +578,17 @@ _animPageBox.FocusLost:Connect(function(_a)
         return
     end
     _animPageBox.Text = "Loading..."
-    local _e, _f = pcall(function() return _fetchAnimPage(_d) end)
-    if not _e or not _f then
+    local pages = _getAnimPages(_animKeyword, _d)
+    if pages and #pages._items > 0 then
+        _animPageNum = _d
+        _animPages = pages
+        _showAnimPage(pages._items)
+    else
         _animPageNotif.Text = "Unable to fetch page"
         _animPageNotif.Visible = true
         task.delay(2, function() if _animPageNotif then _animPageNotif.Visible = false end end)
         _animPageBox.Text = "Page " .. tostring(_animPageNum)
-        return
     end
-    _animPages = _f
-    _animPageNum = _d
-    _showAnimPage(_animPages)
 end)
 
 -- ===== 覆盖原标签切换逻辑 =====
