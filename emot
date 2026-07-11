@@ -233,58 +233,58 @@ _27(_animTabBtn, 4)
 
 -- ===== 新增：Animations 页面框架（与 Catalog 页面位置一致）=====
 local _animFrame = Instance.new("Frame")
-_animFrame.Size = _39.Size  -- 直接复制 Catalog 页面的大小
-_animFrame.Position = _39.Position  -- 直接复制 Catalog 页面的位置
+_animFrame.Size = _39.Size
+_animFrame.Position = _39.Position
 _animFrame.BackgroundTransparency = 1
 _animFrame.Visible = false
 _animFrame.Parent = _30
 
--- Animations 搜索框
+-- Animations 搜索框（参照 Catalog 搜索框 _40）
 local _animSearch = Instance.new("TextBox")
-_animSearch.Size = _68.Size
-_animSearch.Position = _68.Position
+_animSearch.Size = _40.Size
+_animSearch.Position = _40.Position
 _animSearch.PlaceholderText = "Search animations..."
-_animSearch.BackgroundColor3 = _68.BackgroundColor3
-_animSearch.BackgroundTransparency = _68.BackgroundTransparency
-_animSearch.TextColor3 = _68.TextColor3
-_animSearch.Font = _68.Font
+_animSearch.BackgroundColor3 = _40.BackgroundColor3
+_animSearch.BackgroundTransparency = _40.BackgroundTransparency
+_animSearch.TextColor3 = _40.TextColor3
+_animSearch.Font = _40.Font
 _animSearch.TextScaled = true
 _animSearch.ClearTextOnFocus = false
 _animSearch.Text = ""
 _animSearch.Parent = _animFrame
-_27(_animSearch, 6)
+_27(_animSearch, 4)
 _28(_animSearch, Color3.fromRGB(60, 120, 200), 1)
 
--- Animations 刷新按钮
+-- Animations 刷新按钮（参照 Catalog 刷新按钮 _41）
 local _animRefresh = Instance.new("TextButton")
-_animRefresh.Size = _69.Size
-_animRefresh.Position = _69.Position
-_animRefresh.BackgroundColor3 = _69.BackgroundColor3
-_animRefresh.BackgroundTransparency = _69.BackgroundTransparency
+_animRefresh.Size = _41.Size
+_animRefresh.Position = _41.Position
+_animRefresh.BackgroundColor3 = _41.BackgroundColor3
+_animRefresh.BackgroundTransparency = _41.BackgroundTransparency
 _animRefresh.Text = "Refresh"
-_animRefresh.Font = _69.Font
+_animRefresh.Font = _41.Font
 _animRefresh.TextScaled = true
-_animRefresh.TextColor3 = _69.TextColor3
+_animRefresh.TextColor3 = _41.TextColor3
 _animRefresh.Parent = _animFrame
-_27(_animRefresh, 6)
+_27(_animRefresh, 4)
 
--- Animations 排序按钮
+-- Animations 排序按钮（参照 Catalog 排序按钮 _42）
 local _animSort = Instance.new("TextButton")
-_animSort.Size = _70.Size
-_animSort.Position = _70.Position
-_animSort.BackgroundColor3 = _70.BackgroundColor3
-_animSort.BackgroundTransparency = _70.BackgroundTransparency
+_animSort.Size = _42.Size
+_animSort.Position = _42.Position
+_animSort.BackgroundColor3 = _42.BackgroundColor3
+_animSort.BackgroundTransparency = _42.BackgroundTransparency
 _animSort.Text = "Sort: Relevance"
-_animSort.Font = _70.Font
+_animSort.Font = _42.Font
 _animSort.TextScaled = true
-_animSort.TextColor3 = _70.TextColor3
+_animSort.TextColor3 = _42.TextColor3
 _animSort.Parent = _animFrame
-_27(_animSort, 6)
+_27(_animSort, 4)
 
--- Animations 滚动区域
+-- Animations 滚动区域（参照 Catalog 滚动区域 _64）
 local _animScroll = Instance.new("ScrollingFrame")
-_animScroll.Size = _71.Size
-_animScroll.Position = _71.Position
+_animScroll.Size = _64.Size
+_animScroll.Position = _64.Position
 _animScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
 _animScroll.ScrollBarThickness = 6
 _animScroll.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
@@ -308,46 +308,47 @@ _animEmpty.Font = Enum.Font.GothamBold
 _animEmpty.TextScaled = true
 _animEmpty.Visible = false
 
--- Animations 分页按钮
+-- Animations 上一页按钮（参照 Catalog 上一页按钮 _67）
 local _animPrev = Instance.new("TextButton", _animFrame)
-_animPrev.Size = _72.Size
-_animPrev.Position = _72.Position
-_animPrev.BackgroundColor3 = _72.BackgroundColor3
-_animPrev.BackgroundTransparency = _72.BackgroundTransparency
+_animPrev.Size = _67.Size
+_animPrev.Position = _67.Position
+_animPrev.BackgroundColor3 = _67.BackgroundColor3
+_animPrev.BackgroundTransparency = _67.BackgroundTransparency
 _animPrev.Text = "< Prev"
-_animPrev.Font = _72.Font
+_animPrev.Font = _67.Font
 _animPrev.TextScaled = true
-_animPrev.TextColor3 = _72.TextColor3
+_animPrev.TextColor3 = _67.TextColor3
 _27(_animPrev, 6)
 
+-- Animations 下一页按钮（参照 Catalog 下一页按钮 _68）
 local _animNext = Instance.new("TextButton", _animFrame)
-_animNext.Size = _73.Size
-_animNext.Position = _73.Position
-_animNext.BackgroundColor3 = _73.BackgroundColor3
-_animNext.BackgroundTransparency = _73.BackgroundTransparency
+_animNext.Size = _68.Size
+_animNext.Position = _68.Position
+_animNext.BackgroundColor3 = _68.BackgroundColor3
+_animNext.BackgroundTransparency = _68.BackgroundTransparency
 _animNext.Text = "Next >"
-_animNext.Font = _73.Font
+_animNext.Font = _68.Font
 _animNext.TextScaled = true
-_animNext.TextColor3 = _73.TextColor3
+_animNext.TextColor3 = _68.TextColor3
 _27(_animNext, 6)
 
--- Animations 页码输入
+-- Animations 页码输入框（参照 Catalog 页码框 _69）
 local _animPageBox = Instance.new("TextBox", _animFrame)
-_animPageBox.Size = _74.Size
-_animPageBox.Position = _74.Position
+_animPageBox.Size = _69.Size
+_animPageBox.Position = _69.Position
 _animPageBox.BackgroundTransparency = 1
-_animPageBox.Font = _74.Font
+_animPageBox.Font = _69.Font
 _animPageBox.TextScaled = true
 _animPageBox.TextColor3 = Color3.new(1, 1, 1)
 _animPageBox.Text = "1 / Enter page"
 
--- Animations 页码错误提示
+-- Animations 页码错误提示（参照 Catalog 页码提示 _70）
 local _animPageNotif = Instance.new("TextLabel", _animFrame)
-_animPageNotif.Size = _75.Size
-_animPageNotif.Position = _75.Position
+_animPageNotif.Size = _70.Size
+_animPageNotif.Position = _70.Position
 _animPageNotif.BackgroundTransparency = 1
 _animPageNotif.TextColor3 = Color3.fromRGB(255, 120, 80)
-_animPageNotif.Font = _75.Font
+_animPageNotif.Font = _70.Font
 _animPageNotif.TextScaled = true
 _animPageNotif.Text = ""
 _animPageNotif.Visible = false
