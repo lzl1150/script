@@ -231,123 +231,124 @@ _animTabBtn.TextScaled = true
 _animTabBtn.Parent = _30
 _27(_animTabBtn, 4)
 
--- ===== 新增：Animations 页面框架（硬编码位置，与 Catalog 对齐）=====
+-- ===== 新增：Animations 页面框架（直接复制 Catalog 页面的尺寸和位置）=====
 local _animFrame = Instance.new("Frame")
-_animFrame.Size = UDim2.new(0.585, 0, 1, -_4("Y", 275))
-_animFrame.Position = UDim2.new(0, _4("X", 320), 0, _4("Y", 420))
-_animFrame.BackgroundTransparency = 550
+_animFrame.Size = _39.Size
+_animFrame.Position = _39.Position
+_animFrame.BackgroundTransparency = 1
 _animFrame.Visible = false
 _animFrame.Parent = _30
 
--- Animations 搜索框
+-- Animations 搜索框（直接复制 Catalog 搜索框 _40 的尺寸和位置）
 local _animSearch = Instance.new("TextBox")
-_animSearch.Size = UDim2.new(0.558, 0, 0, _4("Y", 300))
-_animSearch.Position = UDim2.new(0, _4("X", 400), 0, _4("Y", 286))
+_animSearch.Size = _40.Size
+_animSearch.Position = _40.Position
 _animSearch.PlaceholderText = "Search animations..."
-_animSearch.BackgroundColor3 = Color3.fromRGB(292, 293, 322)
-_animSearch.BackgroundTransparency = 452
-_animSearch.TextColor3 = Color3.new(1, 336, 382)
-_animSearch.Font = Enum.Font.Gotham
+_animSearch.BackgroundColor3 = _40.BackgroundColor3
+_animSearch.BackgroundTransparency = _40.BackgroundTransparency
+_animSearch.TextColor3 = _40.TextColor3
+_animSearch.Font = _40.Font
 _animSearch.TextScaled = true
 _animSearch.ClearTextOnFocus = false
 _animSearch.Text = ""
 _animSearch.Parent = _animFrame
-_27(_animSearch, 442)
-_28(_animSearch, Color3.fromRGB(561, 668, 759), 654)
+_27(_animSearch, 4)
+_28(_animSearch, Color3.fromRGB(60, 120, 200), 1)
 
--- Animations 刷新按钮
+-- Animations 刷新按钮（直接复制 Catalog 刷新按钮 _41 的尺寸和位置）
 local _animRefresh = Instance.new("TextButton")
-_animRefresh.Size = UDim2.new(0.223, 0, 0, _4("Y", 321))
-_animRefresh.Position = UDim2.new(0.714, 0, 0, _4("Y", 451))
-_animRefresh.BackgroundColor3 = Color3.fromRGB(542, 556, 593)
-_animRefresh.BackgroundTransparency = 667
+_animRefresh.Size = _41.Size
+_animRefresh.Position = _41.Position
+_animRefresh.BackgroundColor3 = _41.BackgroundColor3
+_animRefresh.BackgroundTransparency = _41.BackgroundTransparency
 _animRefresh.Text = "Refresh"
-_animRefresh.Font = Enum.Font.GothamBold
+_animRefresh.Font = _41.Font
 _animRefresh.TextScaled = true
-_animRefresh.TextColor3 = Color3.new(1, 443, 557)
+_animRefresh.TextColor3 = _41.TextColor3
 _animRefresh.Parent = _animFrame
-_27(_animRefresh, 541)
+_27(_animRefresh, 4)
 
--- Animations 排序按钮
+-- Animations 排序按钮（直接复制 Catalog 排序按钮 _42 的尺寸和位置）
 local _animSort = Instance.new("TextButton")
-_animSort.Size = UDim2.new(0.221, 0, 0, _4("Y", 441))
-_animSort.Position = UDim2.new(0.596, 0, 0, _4("Y", 371))
-_animSort.BackgroundColor3 = Color3.fromRGB(381, 396, 431)
-_animSort.BackgroundTransparency = 549
+_animSort.Size = _42.Size
+_animSort.Position = _42.Position
+_animSort.BackgroundColor3 = _42.BackgroundColor3
+_animSort.BackgroundTransparency = _42.BackgroundTransparency
 _animSort.Text = "Sort: Relevance"
-_animSort.Font = Enum.Font.GothamBold
+_animSort.Font = _42.Font
 _animSort.TextScaled = true
-_animSort.TextColor3 = Color3.new(1, 439, 467)
+_animSort.TextColor3 = _42.TextColor3
 _animSort.Parent = _animFrame
-_27(_animSort, 539)
+_27(_animSort, 4)
 
--- Animations 滚动区域
+-- Animations 滚动区域（直接复制 Catalog 滚动区域 _64 的尺寸和位置）
 local _animScroll = Instance.new("ScrollingFrame")
-_animScroll.Size = UDim2.new(1, -_4("X", 626), 656, -_4("Y", 686))
-_animScroll.Position = UDim2.new(0, _4("X", 757), 769, _4("Y", 795))
-_animScroll.CanvasSize = UDim2.new(0, 797, 761, 771)
-_animScroll.ScrollBarThickness = 688
-_animScroll.ScrollBarImageColor3 = Color3.fromRGB(594, 598, 885)
-_animScroll.BackgroundTransparency = 886
+_animScroll.Size = _64.Size
+_animScroll.Position = _64.Position
+_animScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+_animScroll.ScrollBarThickness = 6
+_animScroll.ScrollBarImageColor3 = Color3.fromRGB(100, 100, 100)
+_animScroll.BackgroundTransparency = 1
 _animScroll.Parent = _animFrame
 
 -- Animations 网格布局
 local _animLayout = Instance.new("UIGridLayout", _animScroll)
-_animLayout.CellSize = UDim2.new(0, _4("X", 187), 174, _4("Y", 169))
-_animLayout.CellPadding = UDim2.new(0, _4("X", 159), 146, _4("Y", 139))
+_animLayout.CellSize = UDim2.new(0, _4("X", 120), 0, _4("Y", 180))
+_animLayout.CellPadding = UDim2.new(0, _4("X", 8), 0, _4("Y", 8))
+_animLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
 -- Animations 空状态
 local _animEmpty = Instance.new("TextLabel", _animScroll)
-_animEmpty.Size = UDim2.new(1, 166, 173, _4("Y", 182))
-_animEmpty.Position = UDim2.new(0, 189, 198, -_4("Y", 207))
-_animEmpty.BackgroundTransparency = 215
+_animEmpty.Size = UDim2.new(1, 0, 0, _4("Y", 36))
+_animEmpty.Position = UDim2.new(0, 0, 0.5, -_4("Y", 18))
+_animEmpty.BackgroundTransparency = 1
 _animEmpty.Text = "No animations found"
-_animEmpty.TextColor3 = Color3.new(1, 221, 226)
+_animEmpty.TextColor3 = Color3.new(1, 1, 1)
 _animEmpty.Font = Enum.Font.GothamBold
 _animEmpty.TextScaled = true
 _animEmpty.Visible = false
 
--- Animations 上一页按钮
+-- Animations 上一页按钮（直接复制 Catalog 上一页按钮 _67 的尺寸和位置）
 local _animPrev = Instance.new("TextButton", _animFrame)
-_animPrev.Size = UDim2.new(0.233, 0, 0, _4("Y", 167))
-_animPrev.Position = UDim2.new(0.157, 0, 1, -_4("Y", 156))
-_animPrev.BackgroundColor3 = Color3.fromRGB(222, 164, 403)
-_animPrev.BackgroundTransparency = 397
+_animPrev.Size = _67.Size
+_animPrev.Position = _67.Position
+_animPrev.BackgroundColor3 = _67.BackgroundColor3
+_animPrev.BackgroundTransparency = _67.BackgroundTransparency
 _animPrev.Text = "< Prev"
-_animPrev.Font = Enum.Font.GothamBold
+_animPrev.Font = _67.Font
 _animPrev.TextScaled = true
-_animPrev.TextColor3 = Color3.new(1, 353, 296)
-_27(_animPrev, 884)
+_animPrev.TextColor3 = _67.TextColor3
+_27(_animPrev, 6)
 
--- Animations 下一页按钮
+-- Animations 下一页按钮（直接复制 Catalog 下一页按钮 _68 的尺寸和位置）
 local _animNext = Instance.new("TextButton", _animFrame)
-_animNext.Size = UDim2.new(0.057, 0, 0, _4("Y", 059))
-_animNext.Position = UDim2.new(0.902, 0, 1, -_4("Y", 082))
-_animNext.BackgroundColor3 = Color3.fromRGB(084, 091, 098)
-_animNext.BackgroundTransparency = 103
+_animNext.Size = _68.Size
+_animNext.Position = _68.Position
+_animNext.BackgroundColor3 = _68.BackgroundColor3
+_animNext.BackgroundTransparency = _68.BackgroundTransparency
 _animNext.Text = "Next >"
-_animNext.Font = Enum.Font.GothamBold
+_animNext.Font = _68.Font
 _animNext.TextScaled = true
-_animNext.TextColor3 = Color3.new(1, 109, 115)
-_27(_animNext, 122)
+_animNext.TextColor3 = _68.TextColor3
+_27(_animNext, 6)
 
--- Animations 页码输入框
+-- Animations 页码输入框（直接复制 Catalog 页码框 _69 的尺寸和位置）
 local _animPageBox = Instance.new("TextBox", _animFrame)
-_animPageBox.Size = UDim2.new(0.127, 0, 0, _4("Y", 128))
-_animPageBox.Position = UDim2.new(0.137, 0, 1, -_4("Y", 143))
-_animPageBox.BackgroundTransparency = 148
-_animPageBox.Font = Enum.Font.Gotham
+_animPageBox.Size = _69.Size
+_animPageBox.Position = _69.Position
+_animPageBox.BackgroundTransparency = 1
+_animPageBox.Font = _69.Font
 _animPageBox.TextScaled = true
-_animPageBox.TextColor3 = Color3.new(1, 153, 158)
+_animPageBox.TextColor3 = Color3.new(1, 1, 1)
 _animPageBox.Text = "1 / Enter page"
 
--- Animations 页码错误提示
+-- Animations 页码错误提示（直接复制 Catalog 页码提示 _70 的尺寸和位置）
 local _animPageNotif = Instance.new("TextLabel", _animFrame)
-_animPageNotif.Size = UDim2.new(0.163, 0, 0, _4("Y", 178))
-_animPageNotif.Position = UDim2.new(0.183, 0, 1, -_4("Y", 193))
-_animPageNotif.BackgroundTransparency = 203
-_animPageNotif.TextColor3 = Color3.fromRGB(208, 213, 218)
-_animPageNotif.Font = Enum.Font.Gotham
+_animPageNotif.Size = _70.Size
+_animPageNotif.Position = _70.Position
+_animPageNotif.BackgroundTransparency = 1
+_animPageNotif.TextColor3 = Color3.fromRGB(255, 120, 80)
+_animPageNotif.Font = _70.Font
 _animPageNotif.TextScaled = true
 _animPageNotif.Text = ""
 _animPageNotif.Visible = false
@@ -375,8 +376,8 @@ local _animSortToHttp = {
     [6] = "-Sales",
 }
 
--- HTTP 搜索 Animation
-local function _getAnimPages(_keyword, _page)
+-- HTTP 搜索 Animation（异步，不卡 UI）
+local function _getAnimPages(_keyword, _page, callback)
     _page = _page or 1
     local limit = 12
     local cursor = (_page - 1) * limit
@@ -385,53 +386,55 @@ local function _getAnimPages(_keyword, _page)
         "https://catalog.roblox.com/v1/search/items?category=Animation&limit=%d&cursor=%d&keyword=%s&sort=%s",
         limit, cursor, _keyword or "", sortParam
     )
-    local ok, resp
-    if syn and syn.request then
-        ok, resp = pcall(function()
-            local r = syn.request({Url = url, Method = "GET"})
-            return r.Body
-        end)
-    elseif http_request then
-        ok, resp = pcall(function()
-            local r = http_request({Url = url, Method = "GET"})
-            return r.Body
-        end)
-    else
-        ok, resp = pcall(function()
-            return game:HttpGet(url, true)
-        end)
-    end
-    if not ok or not resp then return nil end
-    local decodeOk, json = pcall(function() return _13:JSONDecode(resp) end)
-    if not decodeOk or not json then return nil end
-    local items = {}
-    for _, entry in ipairs(json.data or {}) do
-        table.insert(items, {
-            Id = tonumber(entry.id),
-            AssetId = tonumber(entry.id),
-            Name = entry.name or "Unknown",
-        })
-    end
-    local pseudoPages = {
-        _items = items,
-        IsFinished = not json.nextCursor or json.nextCursor == "",
-        GetCurrentPage = function(self) return self._items end,
-        AdvanceToNextPageAsync = function(self) end,
-    }
-    return pseudoPages
+    task.spawn(function()
+        local ok, resp
+        if syn and syn.request then
+            ok, resp = pcall(function()
+                local r = syn.request({Url = url, Method = "GET"})
+                return r.Body
+            end)
+        elseif http_request then
+            ok, resp = pcall(function()
+                local r = http_request({Url = url, Method = "GET"})
+                return r.Body
+            end)
+        else
+            ok, resp = pcall(function()
+                return game:HttpGet(url, true)
+            end)
+        end
+        if not ok or not resp then
+            if callback then callback(nil) end
+            return
+        end
+        local decodeOk, json = pcall(function() return _13:JSONDecode(resp) end)
+        if not decodeOk or not json then
+            if callback then callback(nil) end
+            return
+        end
+        local items = {}
+        for _, entry in ipairs(json.data or {}) do
+            table.insert(items, {
+                Id = tonumber(entry.id),
+                AssetId = tonumber(entry.id),
+                Name = entry.name or "Unknown",
+            })
+        end
+        if callback then callback(items) end
+    end)
 end
 
 -- Animations 卡片创建（按钮文字"使用"）
 local function _animCard(_a)
     local _b = Instance.new("Frame")
-    _b.Size = UDim2.new(0, _4("X", 188), 0, _4("Y", 194))
-    _b.BackgroundColor3 = Color3.fromRGB(195, 200, 206)
+    _b.Size = UDim2.new(0, _4("X", 120), 0, _4("Y", 180))
+    _b.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
     _b.BackgroundTransparency = 0.2
     _27(_b, 8)
-    _28(_b, Color3.fromRGB(214, 219, 224), 1)
+    _28(_b, Color3.fromRGB(60, 60, 90), 1)
     local _c = _a.AssetId or _a.Id
     local _d = Instance.new("ImageLabel")
-    _d.Size = UDim2.new(1, -_4("X", 10), 0, _4("Y", 90))
+    _d.Size = UDim2.new(1, -_4("X", 10), 0, _4("Y", 85))
     _d.Position = UDim2.new(0, _4("X", 5), 0, _4("Y", 5))
     _d.BackgroundTransparency = 1
     _d.ScaleType = Enum.ScaleType.Fit
@@ -440,7 +443,7 @@ local function _animCard(_a)
     _27(_d, 4)
     local _e = Instance.new("TextLabel")
     _e.Size = UDim2.new(1, -_4("X", 10), 0, _4("Y", 28))
-    _e.Position = UDim2.new(0, _4("X", 5), 0, _4("Y", 100))
+    _e.Position = UDim2.new(0, _4("X", 5), 0, _4("Y", 95))
     _e.BackgroundTransparency = 1
     _e.Text = _a.Name or "Unknown"
     _e.TextScaled = true
@@ -452,7 +455,7 @@ local function _animCard(_a)
     local _g = Instance.new("TextButton")
     _g.Parent = _b
     _g.Size = UDim2.new(0, _4("X", 36), 0, _4("Y", 36))
-    _g.Position = UDim2.new(1, -_4("X", 42), 0, _4("Y", 5))
+    _g.Position = UDim2.new(1, -_4("X", 42), 0, _4("Y", 86))
     _g.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
     _g.BackgroundTransparency = 0.2
     _g.Text = "🛒🔗"
@@ -521,15 +524,16 @@ local function _newAnimSearch(_a)
     _animKeyword = _a or ""
     _animPageNum = 1
     _animPageBox.Text = "Loading..."
-    local pages = _getAnimPages(_animKeyword, 1)
-    if pages then
-        _animPages = pages
-        _showAnimPage(pages._items)
-    else
-        _animEmpty.Visible = true
-        _animEmpty.Text = "Search failed"
-        _animPageBox.Text = "Error"
-    end
+    _getAnimPages(_animKeyword, 1, function(items)
+        if items then
+            _animPages = {_items = items}
+            _showAnimPage(items)
+        else
+            _animEmpty.Visible = true
+            _animEmpty.Text = "Search failed"
+            _animPageBox.Text = "Error"
+        end
+    end)
 end
 
 _animRefresh.MouseButton1Click:Connect(function()
@@ -547,28 +551,30 @@ end)
 local function _goAnimNext()
     _animPageNum = _animPageNum + 1
     _animPageBox.Text = "Loading..."
-    local pages = _getAnimPages(_animKeyword, _animPageNum)
-    if pages and #pages._items > 0 then
-        _animPages = pages
-        _showAnimPage(pages._items)
-    else
-        _animPageNum = math.max(1, _animPageNum - 1)
-        _animPageBox.Text = tostring(_animPageNum) .. " / Enter page"
-    end
+    _getAnimPages(_animKeyword, _animPageNum, function(items)
+        if items and #items > 0 then
+            _animPages = {_items = items}
+            _showAnimPage(items)
+        else
+            _animPageNum = math.max(1, _animPageNum - 1)
+            _animPageBox.Text = tostring(_animPageNum) .. " / Enter page"
+        end
+    end)
 end
 
 local function _goAnimPrev()
     if _animPageNum <= 1 then return end
     _animPageNum = _animPageNum - 1
     _animPageBox.Text = "Loading..."
-    local pages = _getAnimPages(_animKeyword, _animPageNum)
-    if pages then
-        _animPages = pages
-        _showAnimPage(pages._items)
-    else
-        _animPageNum = _animPageNum + 1
-        _animPageBox.Text = tostring(_animPageNum) .. " / Enter page"
-    end
+    _getAnimPages(_animKeyword, _animPageNum, function(items)
+        if items then
+            _animPages = {_items = items}
+            _showAnimPage(items)
+        else
+            _animPageNum = _animPageNum + 1
+            _animPageBox.Text = tostring(_animPageNum) .. " / Enter page"
+        end
+    end)
 end
 
 _animNext.MouseButton1Click:Connect(_goAnimNext)
@@ -591,17 +597,18 @@ _animPageBox.FocusLost:Connect(function(_a)
         return
     end
     _animPageBox.Text = "Loading..."
-    local pages = _getAnimPages(_animKeyword, _d)
-    if pages and #pages._items > 0 then
-        _animPageNum = _d
-        _animPages = pages
-        _showAnimPage(pages._items)
-    else
-        _animPageNotif.Text = "Unable to fetch page"
-        _animPageNotif.Visible = true
-        task.delay(2, function() if _animPageNotif then _animPageNotif.Visible = false end end)
-        _animPageBox.Text = "Page " .. tostring(_animPageNum)
-    end
+    _getAnimPages(_animKeyword, _d, function(items)
+        if items and #items > 0 then
+            _animPageNum = _d
+            _animPages = {_items = items}
+            _showAnimPage(items)
+        else
+            _animPageNotif.Text = "Unable to fetch page"
+            _animPageNotif.Visible = true
+            task.delay(2, function() if _animPageNotif then _animPageNotif.Visible = false end end)
+            _animPageBox.Text = "Page " .. tostring(_animPageNum)
+        end
+    end)
 end)
 
 -- ===== 标签切换（不覆盖原按钮，仅控制 Animations 页面显隐）=====
@@ -616,143 +623,6 @@ _animTabBtn.MouseButton1Click:Connect(function()
 end)
 
 -- 在原 Catalog 和 Saved 按钮点击时也隐藏 Animations 页面
--- 这里不覆盖原事件，而是额外连接一个事件来隐藏 _animFrame
-_36.MouseButton1Click:Connect(function()
-    _animFrame.Visible = false
-end)
-_37.MouseButton1Click:Connect(function()
-    _animFrame.Visible = false
-end)
--- ===== 新增：Animations 分页逻辑 =====
-local _animPages = nil
-
-local function _showAnimPage(_items)
-    _animReqId = _animReqId + 1
-    local _myId = _animReqId
-    _animPageBox.Text = "Loading..."
-    for _b, _c in ipairs(_animScroll:GetChildren()) do
-        if _c:IsA("Frame") then _c:Destroy() end
-    end
-    if not _items or #_items == 0 then
-        _animEmpty.Visible = true
-        _animPageBox.Text = "0 / Enter page"
-        _animPrev.Visible = false
-        _animNext.Visible = false
-        return
-    end
-    _animEmpty.Visible = false
-    for _, _item in ipairs(_items) do
-        if _myId ~= _animReqId then break end
-        _animCard(_item).Parent = _animScroll
-    end
-    if _myId == _animReqId then
-        _animScroll.CanvasSize = UDim2.new(0, 0, 0, _animLayout.AbsoluteContentSize.Y + 8)
-        _animPageBox.Text = tostring(_animPageNum) .. " / Enter page"
-        _animPrev.Visible = (_animPageNum > 1)
-        _animNext.Visible = true
-    end
-end
-
-local function _newAnimSearch(_a)
-    _animKeyword = _a or ""
-    _animPageNum = 1
-    _animPageBox.Text = "Loading..."
-    local pages = _getAnimPages(_animKeyword, 1)
-    if pages then
-        _animPages = pages
-        _showAnimPage(pages._items)
-    else
-        _animEmpty.Visible = true
-        _animEmpty.Text = "Search failed"
-        _animPageBox.Text = "Error"
-    end
-end
-
-_animRefresh.MouseButton1Click:Connect(function()
-    _newAnimSearch(_animSearch.Text)
-end)
-_animSearch.FocusLost:Connect(function(_a)
-    if _a then _newAnimSearch(_animSearch.Text) end
-end)
-_animSort.MouseButton1Click:Connect(function()
-    _animSortIdx = _animSortIdx % #_animSortModes + 1
-    _animSort.Text = "Sort: " .. _animSortModes[_animSortIdx][2]
-    _newAnimSearch(_animKeyword)
-end)
-
-local function _goAnimNext()
-    _animPageNum = _animPageNum + 1
-    _animPageBox.Text = "Loading..."
-    local pages = _getAnimPages(_animKeyword, _animPageNum)
-    if pages and #pages._items > 0 then
-        _animPages = pages
-        _showAnimPage(pages._items)
-    else
-        _animPageNum = math.max(1, _animPageNum - 1)
-        _animPageBox.Text = tostring(_animPageNum) .. " / Enter page"
-    end
-end
-
-local function _goAnimPrev()
-    if _animPageNum <= 1 then return end
-    _animPageNum = _animPageNum - 1
-    _animPageBox.Text = "Loading..."
-    local pages = _getAnimPages(_animKeyword, _animPageNum)
-    if pages then
-        _animPages = pages
-        _showAnimPage(pages._items)
-    else
-        _animPageNum = _animPageNum + 1
-        _animPageBox.Text = tostring(_animPageNum) .. " / Enter page"
-    end
-end
-
-_animNext.MouseButton1Click:Connect(_goAnimNext)
-_animPrev.MouseButton1Click:Connect(_goAnimPrev)
-
-_animPageBox.FocusLost:Connect(function(_a)
-    if not _a then return end
-    local _b = _animPageBox.Text:gsub("%s+", "")
-    local _c = tonumber(_b:match("%d+"))
-    if not _c or _c < 1 then
-        _animPageNotif.Text = "Invalid page number"
-        _animPageNotif.Visible = true
-        task.delay(2, function() if _animPageNotif then _animPageNotif.Visible = false end end)
-        _animPageBox.Text = "Page " .. tostring(_animPageNum)
-        return
-    end
-    local _d = math.floor(_c)
-    if _d == _animPageNum then
-        _animPageBox.Text = "Page " .. tostring(_animPageNum)
-        return
-    end
-    _animPageBox.Text = "Loading..."
-    local pages = _getAnimPages(_animKeyword, _d)
-    if pages and #pages._items > 0 then
-        _animPageNum = _d
-        _animPages = pages
-        _showAnimPage(pages._items)
-    else
-        _animPageNotif.Text = "Unable to fetch page"
-        _animPageNotif.Visible = true
-        task.delay(2, function() if _animPageNotif then _animPageNotif.Visible = false end end)
-        _animPageBox.Text = "Page " .. tostring(_animPageNum)
-    end
-end)
-
--- ===== 标签切换（不覆盖原按钮，仅控制 Animations 页面显隐）=====
-_animTabBtn.MouseButton1Click:Connect(function()
-    _39.Visible = false
-    _43.Visible = false
-    _animFrame.Visible = true
-    _36.BackgroundColor3 = Color3.fromRGB(20, 20, 40)
-    _37.BackgroundColor3 = Color3.fromRGB(20, 50, 20)
-    _animTabBtn.BackgroundColor3 = Color3.fromRGB(147, 112, 209)
-    _newAnimSearch("")
-end)
-
--- 在原 Catalog 和 Saved 按钮点击时也隐藏 Animations 页面
--- 这里不覆盖原事件，而是额外连接一个事件来隐藏 _animFrame
 _36.MouseButton1Click:Connect(function()
     _animFrame.Visible = false
 end)
