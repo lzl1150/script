@@ -184,7 +184,7 @@ local CoreGui = game:GetService("CoreGui")
 local gui = Instance.new("ScreenGui")
 gui.Name = "GazeEmotesGUI"
 gui.Parent = CoreGui
-gui.Enabled = false
+gui.Enabled = true
 gui.DisplayOrder = 999
 
 local function createCorner(parent, cornerRadius)
