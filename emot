@@ -376,14 +376,15 @@ local _animSortToHttp = {
     [6] = "-Sales",
 }
 
--- HTTP 搜索 Animation（异步，不卡 UI）
+-- HTTP 搜索 Animation（assetTypeId=4 是 Roblox 内部 Animation 的 AssetType ID）
 local function _getAnimPages(_keyword, _page, callback)
     _page = _page or 1
     local limit = 12
     local cursor = (_page - 1) * limit
     local sortParam = _animSortToHttp[_animSortIdx] or ""
+    -- 关键修正：用 assetTypeId=4 替代 category=Animation
     local url = string.format(
-        "https://catalog.roblox.com/v1/search/items?category=Animation&limit=%d&cursor=%d&keyword=%s&sort=%s",
+        "https://catalog.roblox.com/v1/search/items?assetTypeId=4&limit=%d&cursor=%d&keyword=%s&sort=%s",
         limit, cursor, _keyword or "", sortParam
     )
     task.spawn(function()
@@ -404,14 +405,18 @@ local function _getAnimPages(_keyword, _page, callback)
             end)
         end
         if not ok or not resp then
+            warn("[Animations] HTTP request failed, resp=", resp)
             if callback then callback(nil) end
             return
         end
         local decodeOk, json = pcall(function() return _13:JSONDecode(resp) end)
         if not decodeOk or not json then
+            warn("[Animations] JSON decode failed, raw=", resp:sub(1, 200))
             if callback then callback(nil) end
             return
         end
+        -- 调试：打印返回条数
+        warn("[Animations] Page", _page, "got", #(json.data or {}), "items")
         local items = {}
         for _, entry in ipairs(json.data or {}) do
             table.insert(items, {
