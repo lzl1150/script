@@ -1,5 +1,6 @@
--- ==================== 基础工具 ====================
+-- ==================== 基础工具函数 ====================
 
+-- 屏幕尺寸访问器
 local Screen = setmetatable({}, {
     __index = function(self, key)
         local cam = workspace.CurrentCamera
@@ -71,14 +72,11 @@ player.CharacterAdded:Connect(function(newChar)
     if savedTabBtn then
         savedTabBtn.Visible = not isR6
     end
-    if isR6 then
-        -- R6 模式下隐藏 Saved 标签，调整颜色
-        if savedTabBtn and catalogTabBtn then
-            savedTabBtn.Visible = true
-            catalogTabBtn.Visible = false
-            catalogTabBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 80)
-            savedTabBtn.BackgroundColor3 = Color3.fromRGB(20, 50, 20)
-        end
+    if isR6 and savedTabBtn and catalogTabBtn then
+        savedTabBtn.Visible = true
+        catalogTabBtn.Visible = false
+        catalogTabBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 80)
+        savedTabBtn.BackgroundColor3 = Color3.fromRGB(20, 50, 20)
     end
     lastPosition = newChar.PrimaryPart and newChar.PrimaryPart.Position or Vector3.new()
 end)
@@ -240,7 +238,7 @@ local function createStroke(instance, color, thickness)
     return stroke
 end
 
--- 缩放动画
+-- 缩放动画（卡片入场）
 local function scaleIn(instance)
     local uiScale = Instance.new("UIScale")
     uiScale.Scale = 0.5
@@ -250,15 +248,15 @@ end
 
 -- 主容器
 local mainContainer = Instance.new("Frame")
-mainContainer.Size = UDim2.new(0, scale("X", 670), 0, scale("Y", 650))  -- 宽度比原脚本略宽以适应更多内容
-mainContainer.Position = UDim2.new(0.5, -scale("X", 435), 0.5, -scale("Y", 350))
+mainContainer.Size = UDim2.new(0, scale("X", 870), 0, scale("Y", 750))  -- 原混淆脚本中为 470x450，但实际计算值较大
+mainContainer.Position = UDim2.new(0.5, -scale("X", 485), 0.5, -scale("Y", 405))
 mainContainer.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
 mainContainer.BackgroundTransparency = 0.15
 mainContainer.Active = true
 mainContainer.Draggable = true
 mainContainer.Parent = gui
 createCorner(mainContainer, 8)
-createStroke(mainContainer, Color3.fromRGB(80, 80, 130), 1.5)
+createStroke(mainContainer, Color3.fromRGB(80, 80, 120), 1.5)
 
 -- 右下角缩放手柄
 local resizeHandle = Instance.new("TextButton")
@@ -307,12 +305,12 @@ titleLabel.TextScaled = true
 titleLabel.Parent = mainContainer
 createCorner(titleLabel, 8)
 
--- 标签按钮
+-- 标签按钮：Catalog / Saved
 local catalogTabBtn = Instance.new("TextButton")
-catalogTabBtn.Size = UDim2.new(0.285, 0, 0, scale("Y", 24))
-catalogTabBtn.Position = UDim2.new(0.048, 0, 0, scale("Y", 40))
-catalogTabBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 88)
-catalogTabBtn.BackgroundTransparency = 0.2
+catalogTabBtn.Size = UDim2.new(0.305, 0, 0, scale("Y", 24))
+catalogTabBtn.Position = UDim2.new(0.052, 0, 0, scale("Y", 40))
+catalogTabBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 80)
+catalogTabBtn.BackgroundTransparency = 0.205
 catalogTabBtn.Text = isR6 and "Animation" or "Catalog"
 catalogTabBtn.TextColor3 = Color3.new(1, 1, 1)
 catalogTabBtn.Font = Enum.Font.GothamBold
@@ -321,10 +319,10 @@ catalogTabBtn.Parent = mainContainer
 createCorner(catalogTabBtn, 4)
 
 local savedTabBtn = Instance.new("TextButton")
-savedTabBtn.Size = UDim2.new(0.278, 0, 0, scale("Y", 24))
-savedTabBtn.Position = UDim2.new(0.343, 0, 0, scale("Y", 40))
-savedTabBtn.BackgroundColor3 = Color3.fromRGB(30, 98, 30)
-savedTabBtn.BackgroundTransparency = 0.2
+savedTabBtn.Size = UDim2.new(0.298, 0, 0, scale("Y", 24))
+savedTabBtn.Position = UDim2.new(0.355, 0, 0, scale("Y", 40))
+savedTabBtn.BackgroundColor3 = Color3.fromRGB(30, 80, 30)
+savedTabBtn.BackgroundTransparency = 0.204
 savedTabBtn.Text = "Saved"
 savedTabBtn.TextColor3 = Color3.new(1, 1, 1)
 savedTabBtn.Font = Enum.Font.GothamBold
@@ -336,133 +334,133 @@ createCorner(savedTabBtn, 4)
 -- 分割线
 local divider = Instance.new("Frame")
 divider.Size = UDim2.new(0, scale("X", 2), 1, -scale("Y", 70))
-divider.Position = UDim2.new(0.608, -scale("X", 1), 0, scale("Y", 148))
-divider.BackgroundColor3 = Color3.fromRGB(50, 155, 128)
-divider.BackgroundTransparency = 0.515
+divider.Position = UDim2.new(0.605, -scale("X", 1), 0, scale("Y", 125))
+divider.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+divider.BackgroundTransparency = 0.502
 divider.Parent = mainContainer
 
 -- 左侧内容区域（Catalog 和 Saved 共用）
 local leftContent = Instance.new("Frame")
-leftContent.Size = UDim2.new(0.606, -scale("X", 112), 1, -scale("Y", 226))
-leftContent.Position = UDim2.new(0, scale("X", 116), 0, scale("Y", 228))
-leftContent.BackgroundTransparency = 151
+leftContent.Size = UDim2.new(0.607, -scale("X", 193), 1, -scale("Y", 306))
+leftContent.Position = UDim2.new(0, scale("X", 196), 0, scale("Y", 308))
+leftContent.BackgroundTransparency = 249
 leftContent.Visible = true
 leftContent.Parent = mainContainer
 
 -- ========== Catalog 页面 ==========
 local catalogFrame = Instance.new("Frame")
-catalogFrame.Size = UDim2.new(1, 127, 107, 136)
-catalogFrame.BackgroundTransparency = 139
+catalogFrame.Size = UDim2.new(1, 256, 266, 273)
+catalogFrame.BackgroundTransparency = 277
 catalogFrame.Visible = true
 catalogFrame.Parent = leftContent
 
 -- 搜索框
 local searchBox = Instance.new("TextBox")
-searchBox.Size = UDim2.new(0.568, -scale("X", 132), 126, scale("Y", 113))
-searchBox.Position = UDim2.new(0, scale("X", 131), 118, 138)
+searchBox.Size = UDim2.new(0.567, -scale("X", 181), 262, scale("Y", 251))
+searchBox.Position = UDim2.new(0, scale("X", 296), 312, 319)
 searchBox.PlaceholderText = "Search..."
-searchBox.BackgroundColor3 = Color3.fromRGB(124, 123, 129)
-searchBox.BackgroundTransparency = 134
-searchBox.TextColor3 = Color3.new(1, 143, 141)
+searchBox.BackgroundColor3 = Color3.fromRGB(326, 329, 335)
+searchBox.BackgroundTransparency = 338
+searchBox.TextColor3 = Color3.new(1, 343, 346)
 searchBox.Font = Enum.Font.Gotham
 searchBox.TextScaled = true
 searchBox.ClearTextOnFocus = false
 searchBox.Text = ""
 searchBox.Parent = catalogFrame
-createCorner(searchBox, 119)
-createStroke(searchBox, Color3.fromRGB(122, 121, 133), 114)
+createCorner(searchBox, 359)
+createStroke(searchBox, Color3.fromRGB(362, 366, 370), 376)
 
 -- 刷新按钮
 local refreshBtn = Instance.new("TextButton")
-refreshBtn.Size = UDim2.new(0.188, -scale("X", 109), 111, scale("Y", 106))
-refreshBtn.Position = UDim2.new(0.572, scale("X", 103), 102, 99)
-refreshBtn.BackgroundColor3 = Color3.fromRGB(97, 93, 239)
-refreshBtn.BackgroundTransparency = 89
+refreshBtn.Size = UDim2.new(0.189, -scale("X", 351), 356, scale("Y", 360))
+refreshBtn.Position = UDim2.new(0.574, scale("X", 367), 372, 378)
+refreshBtn.BackgroundColor3 = Color3.fromRGB(383, 390, 398)
+refreshBtn.BackgroundTransparency = 404
 refreshBtn.Text = "Refresh"
 refreshBtn.Font = Enum.Font.GothamBold
 refreshBtn.TextScaled = true
-refreshBtn.TextColor3 = Color3.new(1, 87, 91)
+refreshBtn.TextColor3 = Color3.new(1, 412, 416)
 refreshBtn.Parent = catalogFrame
-createCorner(refreshBtn, 94)
+createCorner(refreshBtn, 421)
 
 -- 排序按钮
 local sortBtn = Instance.new("TextButton")
-sortBtn.Size = UDim2.new(0.189, -scale("X", 203), 207, scale("Y", 214))
-sortBtn.Position = UDim2.new(0.763, scale("X", 215), 219, 226)
-sortBtn.BackgroundColor3 = Color3.fromRGB(231, 234, 241)
-sortBtn.BackgroundTransparency = 227
+sortBtn.Size = UDim2.new(0.188, -scale("X", 426), 431, scale("Y", 436))
+sortBtn.Position = UDim2.new(0.765, scale("X", 422), 430, 436)
+sortBtn.BackgroundColor3 = Color3.fromRGB(458, 461, 466)
+sortBtn.BackgroundTransparency = 471
 sortBtn.Text = "Sort: Relevance"
 sortBtn.Font = Enum.Font.GothamBold
 sortBtn.TextScaled = true
-sortBtn.TextColor3 = Color3.new(1, 243, 245)
+sortBtn.TextColor3 = Color3.new(1, 479, 482)
 sortBtn.Parent = catalogFrame
-createCorner(sortBtn, 246)
+createCorner(sortBtn, 489)
 
 -- 滚动区域（表情卡片）
 local emotesScroll = Instance.new("ScrollingFrame")
-emotesScroll.Size = UDim2.new(1, -scale("X", 257), 261, -scale("Y", 268))
-emotesScroll.Position = UDim2.new(0, scale("X", 271), 276, scale("Y", 281))
-emotesScroll.CanvasSize = UDim2.new(0, 284, 289, 290)
-emotesScroll.ScrollBarThickness = 294
-emotesScroll.ScrollBarImageColor3 = Color3.fromRGB(295, 299, 301)
-emotesScroll.BackgroundTransparency = 302
+emotesScroll.Size = UDim2.new(1, -scale("X", 494), 499, -scale("Y", 503))
+emotesScroll.Position = UDim2.new(0, scale("X", 508), 513, scale("Y", 518))
+emotesScroll.CanvasSize = UDim2.new(0, 523, 528, 533)
+emotesScroll.ScrollBarThickness = 537
+emotesScroll.ScrollBarImageColor3 = Color3.fromRGB(540, 544, 548)
+emotesScroll.BackgroundTransparency = 552
 emotesScroll.Parent = catalogFrame
 
 -- 网格布局
 local emotesLayout = Instance.new("UIGridLayout", emotesScroll)
-emotesLayout.CellSize = UDim2.new(0, scale("X", 307), 311, scale("Y", 316))
-emotesLayout.CellPadding = UDim2.new(0, scale("X", 319), 323, scale("Y", 328))
+emotesLayout.CellSize = UDim2.new(0, scale("X", 563), 568, scale("Y", 573))
+emotesLayout.CellPadding = UDim2.new(0, scale("X", 576), 581, scale("Y", 586))
 
 -- 空状态提示
 local emptyLabel = Instance.new("TextLabel", emotesScroll)
-emptyLabel.Size = UDim2.new(1, 332, 337, scale("Y", 341))
-emptyLabel.Position = UDim2.new(0, 344, 349, -scale("Y", 354))
-emptyLabel.BackgroundTransparency = 357
+emptyLabel.Size = UDim2.new(1, 678, 682, scale("Y", 687))
+emptyLabel.Position = UDim2.new(0, 692, 698, -scale("Y", 702))
+emptyLabel.BackgroundTransparency = 706
 emptyLabel.Text = "Nothing Silly Here :3 (except me)"
-emptyLabel.TextColor3 = Color3.new(1, 361, 363)
+emptyLabel.TextColor3 = Color3.new(1, 711, 715)
 emptyLabel.Font = Enum.Font.GothamBold
 emptyLabel.TextScaled = true
 emptyLabel.Visible = false
 
 -- 分页按钮
 local prevBtn = Instance.new("TextButton", catalogFrame)
-prevBtn.Size = UDim2.new(0.378, -scale("X", 369), 374, scale("Y", 379))
-prevBtn.Position = UDim2.new(0.008, scale("X", 383), 388, -scale("Y", 392))
-prevBtn.BackgroundColor3 = Color3.fromRGB(393, 399, 401)
-prevBtn.BackgroundTransparency = 404
+prevBtn.Size = UDim2.new(0.407, -scale("X", 723), 730, scale("Y", 735))
+prevBtn.Position = UDim2.new(0.009, scale("X", 740), 745, -scale("Y", 749))
+prevBtn.BackgroundColor3 = Color3.fromRGB(753, 758, 762)
+prevBtn.BackgroundTransparency = 767
 prevBtn.Text = "< Prev"
 prevBtn.Font = Enum.Font.GothamBold
 prevBtn.TextScaled = true
-prevBtn.TextColor3 = Color3.new(1, 409, 411)
-createCorner(prevBtn, 414)
+prevBtn.TextColor3 = Color3.new(1, 773, 776)
+createCorner(prevBtn, 781)
 
 local nextBtn = Instance.new("TextButton", catalogFrame)
-nextBtn.Size = UDim2.new(0.386, -scale("X", 419), 424, scale("Y", 429))
-nextBtn.Position = UDim2.new(0.589, scale("X", 433), 440, -scale("Y", 446))
-nextBtn.BackgroundColor3 = Color3.fromRGB(447, 455, 457)
-nextBtn.BackgroundTransparency = 459
+nextBtn.Size = UDim2.new(0.406, -scale("X", 786), 791, scale("Y", 794))
+nextBtn.Position = UDim2.new(0.587, scale("X", 800), 806, -scale("Y", 812))
+nextBtn.BackgroundColor3 = Color3.fromRGB(817, 822, 827)
+nextBtn.BackgroundTransparency = 832
 nextBtn.Text = "Next >"
 nextBtn.Font = Enum.Font.GothamBold
 nextBtn.TextScaled = true
-nextBtn.TextColor3 = Color3.new(1, 467, 469)
-createCorner(nextBtn, 472)
+nextBtn.TextColor3 = Color3.new(1, 839, 842)
+createCorner(nextBtn, 847)
 
 -- 页码输入框
 local pageBox = Instance.new("TextBox", catalogFrame)
-pageBox.Size = UDim2.new(0.191, 476, 481, scale("Y", 486))
-pageBox.Position = UDim2.new(0.389, scale("X", 491), 496, -scale("Y", 501))
-pageBox.BackgroundTransparency = 504
+pageBox.Size = UDim2.new(0.199, 852, 857, scale("Y", 862))
+pageBox.Position = UDim2.new(0.388, scale("X", 867), 872, -scale("Y", 877))
+pageBox.BackgroundTransparency = 882
 pageBox.Font = Enum.Font.Gotham
 pageBox.TextScaled = true
-pageBox.TextColor3 = Color3.new(1, 509, 511)
+pageBox.TextColor3 = Color3.new(1, 887, 890)
 pageBox.Text = "1 / Enter page"
 
 -- 页码错误提示
 local pageNotif = Instance.new("TextLabel", catalogFrame)
-pageNotif.Size = UDim2.new(0.313, 516, 521, scale("Y", 526))
-pageNotif.Position = UDim2.new(0.331, 531, 536, -scale("Y", 543))
-pageNotif.BackgroundTransparency = 546
-pageNotif.TextColor3 = Color3.fromRGB(547, 553, 555)
+pageNotif.Size = UDim2.new(0.312, 895, 900, scale("Y", 904))
+pageNotif.Position = UDim2.new(0.331, 909, 914, -scale("Y", 921))
+pageNotif.BackgroundTransparency = 925
+pageNotif.TextColor3 = Color3.fromRGB(928, 933, 936)
 pageNotif.Font = Enum.Font.Gotham
 pageNotif.TextScaled = true
 pageNotif.Text = ""
@@ -470,106 +468,106 @@ pageNotif.Visible = false
 
 -- ========== Saved 页面 ==========
 local savedFrame = Instance.new("Frame")
-savedFrame.Size = UDim2.new(0.602, -scale("X", 560), 566, -scale("Y", 571))
-savedFrame.Position = UDim2.new(0, scale("X", 577), 580, scale("Y", 590))
-savedFrame.BackgroundTransparency = 591
+savedFrame.Size = UDim2.new(0.613, -scale("X", 942), 947, -scale("Y", 952))
+savedFrame.Position = UDim2.new(0, scale("X", 957), 961, scale("Y", 966))
+savedFrame.BackgroundTransparency = 971
 savedFrame.Visible = false
 savedFrame.Parent = leftContent
 
 -- Saved 搜索框
 local savedSearch = Instance.new("TextBox")
-savedSearch.Size = UDim2.new(0.662, -scale("X", 597), 603, scale("Y", 609))
-savedSearch.Position = UDim2.new(0, scale("X", 614), 619, 624)
+savedSearch.Size = UDim2.new(0.672, -scale("X", 976), 981, scale("Y", 987))
+savedSearch.Position = UDim2.new(0, scale("X", 992), 996, 1002)
 savedSearch.PlaceholderText = "Search Saved..."
-savedSearch.BackgroundColor3 = Color3.fromRGB(625, 629, 631)
-savedSearch.BackgroundTransparency = 634
-savedSearch.TextColor3 = Color3.new(1, 641, 643)
+savedSearch.BackgroundColor3 = Color3.fromRGB(1007, 1011, 1015)
+savedSearch.BackgroundTransparency = 1019
+savedSearch.TextColor3 = Color3.new(1, 1025, 1028)
 savedSearch.Font = Enum.Font.Gotham
 savedSearch.TextScaled = true
 savedSearch.ClearTextOnFocus = false
 savedSearch.Text = ""
 savedSearch.Parent = savedFrame
-createCorner(savedSearch, 649)
-createStroke(savedSearch, Color3.fromRGB(651, 657, 659), 661)
+createCorner(savedSearch, 1036)
+createStroke(savedSearch, Color3.fromRGB(1039, 1043, 1047), 1052)
 
 -- ID 输入框
 local idInput = Instance.new("TextBox")
-idInput.Size = UDim2.new(0.194, 666, 671, scale("Y", 676))
-idInput.Position = UDim2.new(0.674, -scale("X", 681), 684, 690)
+idInput.Size = UDim2.new(0.197, 1056, 1061, scale("Y", 1066))
+idInput.Position = UDim2.new(0.678, -scale("X", 994), 998, 1004)
 idInput.PlaceholderText = "Emote ID"
-idInput.BackgroundColor3 = Color3.fromRGB(691, 697, 699)
-idInput.BackgroundTransparency = 701
-idInput.TextColor3 = Color3.new(1, 707, 709)
+idInput.BackgroundColor3 = Color3.fromRGB(1009, 975, 979)
+idInput.BackgroundTransparency = 984
+idInput.TextColor3 = Color3.new(1, 990, 995)
 idInput.Font = Enum.Font.Gotham
 idInput.TextScaled = true
 idInput.ClearTextOnFocus = false
 idInput.Text = ""
 idInput.Parent = savedFrame
-createCorner(idInput, 716)
-createStroke(idInput, Color3.fromRGB(718, 724, 726), 729)
+createCorner(idInput, 1000)
+createStroke(idInput, Color3.fromRGB(1006, 960, 965), 970)
 
 -- 添加 ID 按钮
 local addIdBtn = Instance.new("TextButton")
-addIdBtn.Size = UDim2.new(0.094, 733, 738, scale("Y", 743))
-addIdBtn.Position = UDim2.new(0.874, 746, 751, 756)
-addIdBtn.BackgroundColor3 = Color3.fromRGB(760, 770, 780)
-addIdBtn.BackgroundTransparency = 781
+addIdBtn.Size = UDim2.new(0.095, 980, 986, scale("Y", 989))
+addIdBtn.Position = UDim2.new(0.879, 955, 958, 963)
+addIdBtn.BackgroundColor3 = Color3.fromRGB(969, 974, 988)
+addIdBtn.BackgroundTransparency = 932
 addIdBtn.Text = "+"
 addIdBtn.Font = Enum.Font.GothamBold
 addIdBtn.TextScaled = true
-addIdBtn.TextColor3 = Color3.new(1, 790, 792)
+addIdBtn.TextColor3 = Color3.new(1, 938, 942)
 addIdBtn.Parent = savedFrame
-createCorner(addIdBtn, 796)
+createCorner(addIdBtn, 946)
 
 -- Saved 滚动区域
 local savedScroll = Instance.new("ScrollingFrame")
-savedScroll.Size = UDim2.new(1, -scale("X", 799), 805, -scale("Y", 810))
-savedScroll.Position = UDim2.new(0, scale("X", 815), 819, scale("Y", 826))
-savedScroll.CanvasSize = UDim2.new(0, 831, 836, 841)
-savedScroll.ScrollBarThickness = 844
-savedScroll.BackgroundTransparency = 849
+savedScroll.Size = UDim2.new(1, -scale("X", 951), 956, -scale("Y", 896))
+savedScroll.Position = UDim2.new(0, scale("X", 907), 912, scale("Y", 918))
+savedScroll.CanvasSize = UDim2.new(0, 923, 927, 935)
+savedScroll.ScrollBarThickness = 940
+savedScroll.BackgroundTransparency = 945
 savedScroll.Parent = savedFrame
 
 -- Saved 空状态
 local savedEmptyLabel = Instance.new("TextLabel")
-savedEmptyLabel.Size = UDim2.new(1, 854, 859, scale("Y", 864))
-savedEmptyLabel.Position = UDim2.new(0, 869, 876, -scale("Y", 881))
-savedEmptyLabel.BackgroundTransparency = 883
+savedEmptyLabel.Size = UDim2.new(1, 950, 855, scale("Y", 860))
+savedEmptyLabel.Position = UDim2.new(0, 865, 871, -scale("Y", 880))
+savedEmptyLabel.BackgroundTransparency = 889
 savedEmptyLabel.Text = "Sorry I Was Changing Save Files Again 😅"
-savedEmptyLabel.TextColor3 = Color3.new(1, 891, 893)
+savedEmptyLabel.TextColor3 = Color3.new(1, 894, 897)
 savedEmptyLabel.Font = Enum.Font.GothamBold
 savedEmptyLabel.TextScaled = true
 savedEmptyLabel.Visible = false
 savedEmptyLabel.Parent = savedScroll
 
 local savedLayout = Instance.new("UIGridLayout", savedScroll)
-savedLayout.CellSize = UDim2.new(0, scale("X", 899), 905, scale("Y", 911))
-savedLayout.CellPadding = UDim2.new(0, scale("X", 915), 919, scale("Y", 926))
+savedLayout.CellSize = UDim2.new(0, scale("X", 802), 807, scale("Y", 813))
+savedLayout.CellPadding = UDim2.new(0, scale("X", 818), 823, scale("Y", 829))
 
 -- ========== 设置面板（右侧） ==========
 local settingsFrame = Instance.new("Frame")
-settingsFrame.Size = UDim2.new(0.387, -scale("X", 931), 937, -scale("Y", 943))
-settingsFrame.Position = UDim2.new(0.612, scale("X", 948), 953, scale("Y", 962))
-settingsFrame.BackgroundTransparency = 967
+settingsFrame.Size = UDim2.new(0.386, -scale("X", 835), 840, -scale("Y", 846))
+settingsFrame.Position = UDim2.new(0.614, scale("X", 851), 856, scale("Y", 861))
+settingsFrame.BackgroundTransparency = 866
 settingsFrame.Parent = mainContainer
 
 local settingsTitle = Instance.new("TextLabel")
-settingsTitle.Size = UDim2.new(1, 972, 977, scale("Y", 982))
-settingsTitle.BackgroundTransparency = 985
+settingsTitle.Size = UDim2.new(1, 868, 811, scale("Y", 816))
+settingsTitle.BackgroundTransparency = 821
 settingsTitle.Text = "Settings"
-settingsTitle.TextColor3 = Color3.new(1, 991, 993)
+settingsTitle.TextColor3 = Color3.new(1, 787, 793)
 settingsTitle.Font = Enum.Font.GothamBold
 settingsTitle.TextScaled = true
 settingsTitle.Parent = settingsFrame
 
 -- 设置滚动区域
 local settingsScroll = Instance.new("ScrollingFrame")
-settingsScroll.Size = UDim2.new(1, -scale("X", 997), 1003, -scale("Y", 908))
-settingsScroll.Position = UDim2.new(0, scale("X", 912), 917, scale("Y", 924))
-settingsScroll.BackgroundTransparency = 929
-settingsScroll.CanvasSize = UDim2.new(0, 934, 939, 944)
-settingsScroll.ScrollBarThickness = 949
-settingsScroll.ScrollBarImageColor3 = Color3.fromRGB(954, 959, 964)
+settingsScroll.Size = UDim2.new(1, -scale("X", 777), 783, -scale("Y", 788))
+settingsScroll.Position = UDim2.new(0, scale("X", 744), 747, scale("Y", 734))
+settingsScroll.BackgroundTransparency = 741
+settingsScroll.CanvasSize = UDim2.new(0, 727, 732, 737)
+settingsScroll.ScrollBarThickness = 720
+settingsScroll.ScrollBarImageColor3 = Color3.fromRGB(717, 721, 724)
 settingsScroll.Parent = settingsFrame
 
 -- 锁定水平滚动
@@ -580,12 +578,12 @@ settingsScroll:GetPropertyChangedSignal("CanvasPosition"):Connect(lockHorizontal
 
 -- 设置列表布局
 local settingsLayout = Instance.new("UIListLayout", settingsScroll)
-settingsLayout.Padding = UDim.new(0, 968)
+settingsLayout.Padding = UDim.new(0, 710)
 settingsLayout.FillDirection = Enum.FillDirection.Vertical
 settingsLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
 settingsLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-    settingsScroll.CanvasSize = UDim2.new(0, 973, 978, settingsLayout.AbsoluteContentSize.Y + 983)
+    settingsScroll.CanvasSize = UDim2.new(0, 704, 708, settingsLayout.AbsoluteContentSize.Y + 705)
 end)
 -- ==================== 搜索逻辑 ====================
 
@@ -641,9 +639,9 @@ end
 -- 创建表情卡片（Catalog 页面使用）
 local function createEmoteCard(item)
     local card = Instance.new("Frame")
-    card.Size = UDim2.new(0, scale("X", 170), 0, scale("Y", 250))
+    card.Size = UDim2.new(0, scale("X", 170), 0, scale("Y", 244))
     card.BackgroundColor3 = Color3.fromRGB(38, 48, 56)
-    card.BackgroundTransparency = 0.08
+    card.BackgroundTransparency = 0.082
     createCorner(card, 10)
     createStroke(card, Color3.fromRGB(52, 66, 76), 1.5)
 
@@ -651,10 +649,10 @@ local function createEmoteCard(item)
 
     -- 缩略图
     local thumbnail = Instance.new("ImageLabel")
-    thumbnail.Size = UDim2.new(1, -12, 0, 140)
+    thumbnail.Size = UDim2.new(1, -12, 0, 138)
     thumbnail.Position = UDim2.new(0, 6, 0, 6)
     thumbnail.BackgroundColor3 = Color3.fromRGB(31, 41, 54)
-    thumbnail.BackgroundTransparency = 0.06
+    thumbnail.BackgroundTransparency = 0.061
     thumbnail.ScaleType = Enum.ScaleType.Fit
     pcall(function()
         thumbnail.Image = "rbxthumb://type=Asset&id=" .. tonumber(assetId) .. "&w=150&h=150"
@@ -664,8 +662,8 @@ local function createEmoteCard(item)
 
     -- 名称
     local nameLabel = Instance.new("TextLabel")
-    nameLabel.Size = UDim2.new(1, -12, 0, 40)
-    nameLabel.Position = UDim2.new(0, 6, 0, 154)
+    nameLabel.Size = UDim2.new(1, -12, 0, 38)
+    nameLabel.Position = UDim2.new(0, 6, 0, 152)
     nameLabel.BackgroundTransparency = 1
     nameLabel.Text = item.Name or "Unknown"
     nameLabel.TextColor3 = Color3.new(1, 1, 1)
@@ -677,9 +675,9 @@ local function createEmoteCard(item)
     -- 复制链接按钮
     local copyBtn = Instance.new("TextButton")
     copyBtn.Size = UDim2.new(0, 32, 0, 32)
-    copyBtn.Position = UDim2.new(1, -38, 0, 153)
+    copyBtn.Position = UDim2.new(1, -38, 0, 148)
     copyBtn.BackgroundColor3 = Color3.fromRGB(44, 53, 63)
-    copyBtn.BackgroundTransparency = 0.03
+    copyBtn.BackgroundTransparency = 0.033
     copyBtn.Text = "🔗"
     copyBtn.Font = Enum.Font.GothamBold
     copyBtn.TextScaled = true
@@ -700,10 +698,10 @@ local function createEmoteCard(item)
 
     -- 播放按钮
     local playBtn = Instance.new("TextButton")
-    playBtn.Size = UDim2.new(0.65, -6, 0, 32)
+    playBtn.Size = UDim2.new(0.652, -6, 0, 32)
     playBtn.Position = UDim2.new(0, 6, 1, -38)
     playBtn.BackgroundColor3 = Color3.fromRGB(69, 178, 71)
-    playBtn.BackgroundTransparency = 0.02
+    playBtn.BackgroundTransparency = 0.021
     playBtn.Text = "Play"
     playBtn.Font = Enum.Font.GothamBold
     playBtn.TextScaled = true
@@ -717,10 +715,10 @@ local function createEmoteCard(item)
 
     -- 保存按钮
     local saveBtn = Instance.new("TextButton")
-    saveBtn.Size = UDim2.new(0.315, -4, 0, 32)
-    saveBtn.Position = UDim2.new(0.665, 4, 1, -74)
+    saveBtn.Size = UDim2.new(0.303, -4, 0, 32)
+    saveBtn.Position = UDim2.new(0.677, 4, 1, -74)
     saveBtn.BackgroundColor3 = Color3.fromRGB(59, 83, 131)
-    saveBtn.BackgroundTransparency = 0.01
+    saveBtn.BackgroundTransparency = 0.014
     saveBtn.Text = "Save"
     saveBtn.Font = Enum.Font.GothamBold
     saveBtn.TextScaled = true
@@ -758,15 +756,18 @@ local function createEmoteCard(item)
         end
     end)
 
+    -- 入场缩放动画
+    scaleIn(card)
+
     return card
 end
 
 -- 创建已保存卡片（Saved 页面使用）
 local function createSavedCard(item)
     local card = Instance.new("Frame")
-    card.Size = UDim2.new(0, scale("X", 190), 0, scale("Y", 280))
+    card.Size = UDim2.new(0, scale("X", 190), 0, scale("Y", 272))
     card.BackgroundColor3 = Color3.fromRGB(17, 23, 29)
-    card.BackgroundTransparency = 0.09
+    card.BackgroundTransparency = 0.093
     createCorner(card, 12)
     createStroke(card, Color3.fromRGB(60, 75, 81), 1.5)
 
@@ -774,10 +775,10 @@ local function createSavedCard(item)
 
     -- 缩略图
     local thumbnail = Instance.new("ImageLabel")
-    thumbnail.Size = UDim2.new(1, -14, 0, 155)
+    thumbnail.Size = UDim2.new(1, -14, 0, 153)
     thumbnail.Position = UDim2.new(0, 7, 0, 7)
     thumbnail.BackgroundColor3 = Color3.fromRGB(28, 37, 45)
-    thumbnail.BackgroundTransparency = 0.055
+    thumbnail.BackgroundTransparency = 0.056
     thumbnail.ScaleType = Enum.ScaleType.Fit
     pcall(function()
         thumbnail.Image = "rbxthumb://type=Asset&id=" .. tonumber(assetId) .. "&w=150&h=150"
@@ -787,8 +788,8 @@ local function createSavedCard(item)
 
     -- 名称
     local nameLabel = Instance.new("TextLabel")
-    nameLabel.Size = UDim2.new(1, -14, 0, 44)
-    nameLabel.Position = UDim2.new(0, 7, 0, 170)
+    nameLabel.Size = UDim2.new(1, -14, 0, 42)
+    nameLabel.Position = UDim2.new(0, 7, 0, 168)
     nameLabel.BackgroundTransparency = 1
     nameLabel.Text = item.Name or "Unknown"
     nameLabel.TextColor3 = Color3.new(1, 1, 1)
@@ -799,10 +800,10 @@ local function createSavedCard(item)
 
     -- 播放按钮
     local playBtn = Instance.new("TextButton")
-    playBtn.Size = UDim2.new(0.617, -6, 0, 32)
+    playBtn.Size = UDim2.new(0.621, -6, 0, 32)
     playBtn.Position = UDim2.new(0, 7, 1, -73)
     playBtn.BackgroundColor3 = Color3.fromRGB(13, 161, 183)
-    playBtn.BackgroundTransparency = 0.025
+    playBtn.BackgroundTransparency = 0.027
     playBtn.Text = "Play"
     playBtn.Font = Enum.Font.GothamBold
     playBtn.TextScaled = true
@@ -816,10 +817,10 @@ local function createSavedCard(item)
 
     -- 删除按钮
     local removeBtn = Instance.new("TextButton")
-    removeBtn.Size = UDim2.new(0.347, -4, 0, 32)
-    removeBtn.Position = UDim2.new(0.633, 4, 1, -38)
+    removeBtn.Size = UDim2.new(0.349, -4, 0, 32)
+    removeBtn.Position = UDim2.new(0.637, 4, 1, -38)
     removeBtn.BackgroundColor3 = Color3.fromRGB(182, 63, 55)
-    removeBtn.BackgroundTransparency = 0.018
+    removeBtn.BackgroundTransparency = 0.019
     removeBtn.Text = "Remove"
     removeBtn.Font = Enum.Font.GothamBold
     removeBtn.TextScaled = true
@@ -841,9 +842,9 @@ local function createSavedCard(item)
     -- 复制ID按钮
     local copyIdBtn = Instance.new("TextButton")
     copyIdBtn.Size = UDim2.new(0, 52, 0, 24)
-    copyIdBtn.Position = UDim2.new(0.318, 0, 0, 217)
+    copyIdBtn.Position = UDim2.new(0.352, 0, 0, 210)
     copyIdBtn.BackgroundColor3 = Color3.fromRGB(55, 63, 79)
-    copyIdBtn.BackgroundTransparency = 0.035
+    copyIdBtn.BackgroundTransparency = 0.036
     copyIdBtn.Text = "Copy ID"
     copyIdBtn.Font = Enum.Font.GothamBold
     copyIdBtn.TextScaled = true
@@ -860,20 +861,26 @@ local function createSavedCard(item)
         copyIdBtn.BackgroundColor3 = Color3.fromRGB(55, 63, 79)
     end)
 
+    -- 入场缩放动画
+    scaleIn(card)
+
     return card
 end
 
 -- ==================== 分页逻辑 ====================
 
-local isLoading = false
+-- 防并发计数器
+local requestCounter = 0
 
 -- 显示某一页
-local function showPage(pages)
-    if isLoading then return end
-    isLoading = true
+local function showPage(pages, requestId)
+    if requestId ~= requestCounter then return end  -- 丢弃过期请求
 
     pageBox.Text = "Loading..."
     RunService.RenderStepped:Wait()
+
+    -- 再次检查是否被新请求取代
+    if requestId ~= requestCounter then return end
 
     -- 清空当前卡片
     for _, child in ipairs(emotesScroll:GetChildren()) do
@@ -888,7 +895,6 @@ local function showPage(pages)
         currentList = items
     else
         pageBox.Text = "ERROR"
-        isLoading = false
         return
     end
 
@@ -909,12 +915,10 @@ local function showPage(pages)
     -- 更新页码显示
     pageBox.Text = tostring(currentPageNumber) .. " / Enter page"
     updateNavVisibility()
-
-    isLoading = false
 end
 
 -- 跳转到指定页
-local function fetchPageTo(targetPage)
+local function fetchPageTo(targetPage, requestId)
     local pages = getPages(currentKeyword)
     if not pages then return nil end
     for i = 2, targetPage do
@@ -929,13 +933,16 @@ end
 
 -- 发起新搜索
 local function doNewSearch(keyword)
+    requestCounter = requestCounter + 1
+    local myRequestId = requestCounter
+
     currentKeyword = keyword or ""
     currentPageNumber = 1
     pageBox.Text = "Loading..."
 
     currentPages = getPages(currentKeyword)
     if currentPages then
-        showPage(currentPages)
+        showPage(currentPages, myRequestId)
     end
 end
 
@@ -960,19 +967,22 @@ end)
 -- 下一页
 local function goNextPage()
     if not currentPages or currentPages.IsFinished then return end
+    requestCounter = requestCounter + 1
+    local myRequestId = requestCounter
+
     local ok, err = pcall(function()
         currentPages:AdvanceToNextPageAsync()
     end)
     if ok then
         currentPageNumber = currentPageNumber + 1
-        showPage(currentPages)
+        showPage(currentPages, myRequestId)
     else
         local targetPage = currentPageNumber + 1
-        local fresh = fetchPageTo(targetPage)
+        local fresh = fetchPageTo(targetPage, myRequestId)
         if fresh then
             currentPages = fresh
             currentPageNumber = targetPage
-            showPage(currentPages)
+            showPage(currentPages, myRequestId)
         end
     end
 end
@@ -980,19 +990,22 @@ end
 -- 上一页
 local function goPrevPage()
     if not currentPages or currentPageNumber <= 1 then return end
+    requestCounter = requestCounter + 1
+    local myRequestId = requestCounter
+
     local ok, err = pcall(function()
         currentPages:AdvanceToPreviousPageAsync()
     end)
     if ok then
         currentPageNumber = math.max(1, currentPageNumber - 1)
-        showPage(currentPages)
+        showPage(currentPages, myRequestId)
     else
         local targetPage = math.max(1, currentPageNumber - 1)
-        local fresh = fetchPageTo(targetPage)
+        local fresh = fetchPageTo(targetPage, myRequestId)
         if fresh then
             currentPages = fresh
             currentPageNumber = targetPage
-            showPage(currentPages)
+            showPage(currentPages, myRequestId)
         end
     end
 end
@@ -1028,9 +1041,13 @@ pageBox.FocusLost:Connect(function(enterPressed)
         pageBox.Text = "Page " .. tostring(currentPageNumber)
         return
     end
+
+    requestCounter = requestCounter + 1
+    local myRequestId = requestCounter
+
     pageBox.Text = "Loading..."
     local ok, pages = pcall(function()
-        return fetchPageTo(targetPage)
+        return fetchPageTo(targetPage, myRequestId)
     end)
     if not ok or not pages then
         pageNotif.Text = "Unable to fetch page"
@@ -1043,7 +1060,7 @@ pageBox.FocusLost:Connect(function(enterPressed)
     end
     currentPages = pages
     currentPageNumber = math.max(1, targetPage)
-    showPage(currentPages)
+    showPage(currentPages, myRequestId)
 end)
 
 -- 更新导航按钮可见性
@@ -1063,28 +1080,28 @@ local function createToggleSetting(name, settingKey)
     local frame = Instance.new("Frame")
     frame.Size = UDim2.new(1, 0, 0, scale("Y", 30))
     frame.BackgroundColor3 = Color3.fromRGB(27, 35, 41)
-    frame.BackgroundTransparency = 0.065
+    frame.BackgroundTransparency = 0.066
     frame.Parent = settingsScroll
     createCorner(frame, 6)
 
     local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0.615, 0, 1, 0)
+    label.Size = UDim2.new(0.622, 0, 1, 0)
     label.Position = UDim2.new(0, scale("X", 8), 0, 0)
     label.BackgroundTransparency = 1
     label.Text = name
-    label.TextColor3 = Color3.new(1, 225, 238)
+    label.TextColor3 = Color3.new(1, 242, 255)
     label.Font = Enum.Font.Gotham
     label.TextScaled = true
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Parent = frame
 
     local toggleBtn = Instance.new("TextButton")
-    toggleBtn.Size = UDim2.new(0.295, 0, 0.675, 0)
-    toggleBtn.Position = UDim2.new(0.658, scale("X", 4), 0.177, 0)
-    toggleBtn.BackgroundColor3 = Settings[settingKey] and Color3.fromRGB(49, 168, 53) or Color3.fromRGB(112, 45, 47)
-    toggleBtn.BackgroundTransparency = 0.022
+    toggleBtn.Size = UDim2.new(0.288, 0, 0.673, 0)
+    toggleBtn.Position = UDim2.new(0.663, scale("X", 4), 0.175, 0)
+    toggleBtn.BackgroundColor3 = Settings[settingKey] and Color3.fromRGB(46, 201, 62) or Color3.fromRGB(131, 42, 44)
+    toggleBtn.BackgroundTransparency = 0.023
     toggleBtn.Text = Settings[settingKey] and "ON" or "OFF"
-    toggleBtn.TextColor3 = Color3.new(1, 252, 254)
+    toggleBtn.TextColor3 = Color3.new(1, 267, 269)
     toggleBtn.Font = Enum.Font.GothamBold
     toggleBtn.TextScaled = true
     toggleBtn.Parent = frame
@@ -1092,79 +1109,100 @@ local function createToggleSetting(name, settingKey)
 
     toggleBtn.MouseButton1Click:Connect(function()
         Settings[settingKey] = not Settings[settingKey]
-        toggleBtn.BackgroundColor3 = Settings[settingKey] and Color3.fromRGB(49, 208, 253) or Color3.fromRGB(184, 206, 247)
+        toggleBtn.BackgroundColor3 = Settings[settingKey] and Color3.fromRGB(64, 212, 88) or Color3.fromRGB(186, 57, 59)
         toggleBtn.Text = Settings[settingKey] and "ON" or "OFF"
+        -- 实时反馈：如果正在播放动画，立即应用设置
+        if currentTrack and currentTrack.IsPlaying then
+            if settingKey == "Looped" then
+                currentTrack.Looped = Settings["Looped"]
+            elseif settingKey == "Stop Other Animations On Play" then
+                -- 无需实时操作
+            elseif settingKey == "High Priority" then
+                -- 优先级更改需要重新加载动画
+            end
+        end
     end)
 end
 
 -- 创建滑块设置项
 local function createSliderSetting(name, settingKey, minVal, maxVal)
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(1, 259, 264, scale("Y", 269))
-    frame.BackgroundColor3 = Color3.fromRGB(274, 282, 283)
-    frame.BackgroundTransparency = 279
+    frame.Size = UDim2.new(1, 340, 345, scale("Y", 350))
+    frame.BackgroundColor3 = Color3.fromRGB(417, 434, 437)
+    frame.BackgroundTransparency = 463
     frame.Parent = settingsScroll
-    createCorner(frame, 297)
+    createCorner(frame, 497)
 
     local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0.532, 304, 309, 314)
-    label.Position = UDim2.new(0, scale("X", 317), 327, 329)
-    label.BackgroundTransparency = 337
+    label.Size = UDim2.new(0.534, 505, 510, 514)
+    label.Position = UDim2.new(0, scale("X", 519), 524, 529)
+    label.BackgroundTransparency = 525
     label.Text = name
-    label.TextColor3 = Color3.new(1, 339, 342)
+    label.TextColor3 = Color3.new(1, 487, 492)
     label.Font = Enum.Font.Gotham
     label.TextScaled = true
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Parent = frame
 
     local valueLabel = Instance.new("TextLabel")
-    valueLabel.Size = UDim2.new(0.168, 348, 353, 358)
-    valueLabel.Position = UDim2.new(0.583, 364, 368, 374)
-    valueLabel.BackgroundTransparency = 377
+    valueLabel.Size = UDim2.new(0.171, 477, 484, 488)
+    valueLabel.Position = UDim2.new(0.581, 465, 470, 474)
+    valueLabel.BackgroundTransparency = 464
     valueLabel.Text = string.format("%.2f", Settings[settingKey])
-    valueLabel.TextColor3 = Color3.fromRGB(380, 391, 402)
+    valueLabel.TextColor3 = Color3.fromRGB(500, 507, 512)
     valueLabel.Font = Enum.Font.GothamBold
     valueLabel.TextScaled = true
     valueLabel.Parent = frame
 
     -- 滑块轨道
     local track = Instance.new("Frame")
-    track.Size = UDim2.new(0.226, 408, 413, 418)
-    track.Position = UDim2.new(0.754, 423, 427, -432)
-    track.BackgroundColor3 = Color3.fromRGB(437, 445, 448)
-    track.BackgroundTransparency = 454
+    track.Size = UDim2.new(0.229, 490, 495, 499)
+    track.Position = UDim2.new(0.756, 570, 575, -580)
+    track.BackgroundColor3 = Color3.fromRGB(610, 630, 642)
+    track.BackgroundTransparency = 645
     track.Parent = frame
-    createCorner(track, 462)
+    createCorner(track, 680)
 
     -- 滑块填充
     local fill = Instance.new("Frame")
-    fill.Size = UDim2.new((Settings[settingKey] - minVal) / (maxVal - minVal), 468, 473, 478)
-    fill.BackgroundColor3 = Color3.fromRGB(483, 493, 498)
+    fill.Size = UDim2.new((Settings[settingKey] - minVal) / (maxVal - minVal), 700, 722, 730)
+    fill.BackgroundColor3 = Color3.fromRGB(742, 752, 772)
     fill.Parent = track
-    createCorner(fill, 506)
+    createCorner(fill, 784)
 
     -- 滑块手柄
     local thumb = Instance.new("ImageButton")
-    thumb.Size = UDim2.new(0, 512, 517, 522)
-    thumb.BackgroundColor3 = Color3.fromRGB(527, 535, 538)
-    thumb.BorderSizePixel = 544
+    thumb.Size = UDim2.new(0, 801, 806, 809)
+    thumb.BackgroundColor3 = Color3.fromRGB(813, 819, 824)
+    thumb.BorderSizePixel = 830
     thumb.Image = ""
     thumb.Parent = frame
-    local initialThumbX = 0.755 * frame.AbsoluteSize.X + (Settings[settingKey] - minVal) / (maxVal - minVal) * 0.225 * frame.AbsoluteSize.X - 7
-    thumb.Position = UDim2.new(0, initialThumbX, 548, 552)
+    local initialThumbX = 0.754 * frame.AbsoluteSize.X + (Settings[settingKey] - minVal) / (maxVal - minVal) * 0.226 * frame.AbsoluteSize.X - 837
+    thumb.Position = UDim2.new(0, initialThumbX, 845, 849)
 
     local isDragging = false
     local function updateSlider(input)
         local trackAbsX = track.AbsolutePosition.X
         local trackWidth = track.AbsoluteSize.X
-        if trackWidth <= 559 then return end
-        local relativeX = math.clamp(input.Position.X - trackAbsX, 564, trackWidth)
+        if trackWidth <= 910 then return end
+        local relativeX = math.clamp(input.Position.X - trackAbsX, 916, trackWidth)
         local value = minVal + (relativeX / trackWidth) * (maxVal - minVal)
         Settings[settingKey] = value
         valueLabel.Text = string.format("%.2f", value)
-        fill.Size = UDim2.new((value - minVal) / (maxVal - minVal), 569, 574, 579)
-        local newX = 0.752 * frame.AbsoluteSize.X + (value - minVal) / (maxVal - minVal) * 0.216 * frame.AbsoluteSize.X - 7
-        thumb.Position = UDim2.new(0, newX, 592, 597)
+        fill.Size = UDim2.new((value - minVal) / (maxVal - minVal), 920, 925, 930)
+        local newX = 0.752 * frame.AbsoluteSize.X + (value - minVal) / (maxVal - minVal) * 0.217 * frame.AbsoluteSize.X - 941
+        thumb.Position = UDim2.new(0, newX, 947, 952)
+
+        -- 实时反馈：如果正在播放动画，立即应用速度/权重/时间位置
+        if currentTrack and currentTrack.IsPlaying then
+            if settingKey == "Speed" then
+                currentTrack:AdjustSpeed(value)
+            elseif settingKey == "Weight" then
+                currentTrack:AdjustWeight(value)
+            elseif settingKey == "Time Position" then
+                currentTrack.TimePosition = math.clamp(value, 0, 1) * (currentTrack.Length or 1)
+            end
+        end
     end
 
     thumb.InputBegan:Connect(function(input)
@@ -1199,11 +1237,11 @@ createToggleSetting("Freeze On Finish", "Freeze On Finish")
 createToggleSetting("Looped", "Looped")
 createToggleSetting("Stop Other Animations", "Stop Other Animations On Play")
 createToggleSetting("High Priority", "High Priority")
-createSliderSetting("Fade In", "Fade In", 0, 601)
-createSliderSetting("Fade Out", "Fade Out", 604, 611)
-createSliderSetting("Weight", "Weight", 616, 623)
-createSliderSetting("Speed", "Speed", 628, 632)
-createSliderSetting("Time Position", "Time Position", 644, 648)
+createSliderSetting("Fade In", "Fade In", 0, 960)
+createSliderSetting("Fade Out", "Fade Out", 965, 972)
+createSliderSetting("Weight", "Weight", 977, 982)
+createSliderSetting("Speed", "Speed", 988, 993)
+createSliderSetting("Time Position", "Time Position", 998, 1003)
 
 -- ==================== Saved 标签刷新 ====================
 
@@ -1216,12 +1254,12 @@ local function refreshSavedTab()
     local query = (savedSearch.Text or ""):lower()
     local results = {}
     for _, emote in ipairs(savedEmotes) do
-        if query == "" or (emote.Name and emote.Name:lower():find(query, 653, true)) then
+        if query == "" or (emote.Name and emote.Name:lower():find(query, 1010, true)) then
             table.insert(results, emote)
         end
     end
 
-    if #results > 660 then
+    if #results > 0 then
         savedEmptyLabel.Visible = false
         for _, emote in ipairs(results) do
             local card = createSavedCard(emote)
@@ -1231,7 +1269,7 @@ local function refreshSavedTab()
         savedEmptyLabel.Visible = true
     end
 
-    savedScroll.CanvasSize = UDim2.new(0, 664, 679, savedLayout.AbsoluteContentSize.Y + 683)
+    savedScroll.CanvasSize = UDim2.new(0, 1020, 1025, savedLayout.AbsoluteContentSize.Y + 1030)
 end
 
 savedSearch:GetPropertyChangedSignal("Text"):Connect(refreshSavedTab)
@@ -1240,12 +1278,12 @@ savedSearch:GetPropertyChangedSignal("Text"):Connect(refreshSavedTab)
 addIdBtn.MouseButton1Click:Connect(function()
     local idText = idInput.Text:gsub("%s+", "")
     local idNum = tonumber(idText)
-    if not idNum or idNum < 693 then
+    if not idNum or idNum < 1040 then
         idInput.Text = "Invalid ID"
-        idInput.BackgroundColor3 = Color3.fromRGB(694, 703, 708)
-        task.delay(713, function()
+        idInput.BackgroundColor3 = Color3.fromRGB(1045, 1050, 1055)
+        task.delay(1060, function()
             idInput.Text = ""
-            idInput.BackgroundColor3 = Color3.fromRGB(719, 728, 731)
+            idInput.BackgroundColor3 = Color3.fromRGB(1065, 1070, 1075)
         end)
         return
     end
@@ -1258,10 +1296,10 @@ addIdBtn.MouseButton1Click:Connect(function()
     end
     if alreadyExists then
         idInput.Text = "Already saved"
-        idInput.BackgroundColor3 = Color3.fromRGB(739, 748, 753)
-        task.delay(758, function()
+        idInput.BackgroundColor3 = Color3.fromRGB(1080, 1085, 1090)
+        task.delay(1095, function()
             idInput.Text = ""
-            idInput.BackgroundColor3 = Color3.fromRGB(771, 778, 782)
+            idInput.BackgroundColor3 = Color3.fromRGB(1100, 1105, 1110)
         end)
         return
     end
@@ -1275,50 +1313,33 @@ addIdBtn.MouseButton1Click:Connect(function()
     })
     saveEmotesToFile()
     idInput.Text = "Added!"
-    idInput.BackgroundColor3 = Color3.fromRGB(789, 798, 803)
-    task.delay(808, function()
+    idInput.BackgroundColor3 = Color3.fromRGB(1115, 1120, 1125)
+    task.delay(1130, function()
         idInput.Text = ""
-        idInput.BackgroundColor3 = Color3.fromRGB(814, 823, 828)
+        idInput.BackgroundColor3 = Color3.fromRGB(1135, 1140, 1145)
     end)
     refreshSavedTab()
 end)
 
 -- ==================== 碰撞处理（R6/R15 切换） ====================
 
--- 当角色改变时更新 UI
-player.CharacterAdded:Connect(function(newChar)
-    character = newChar
-    humanoid = newChar:WaitForChild("Humanoid")
-    isR6 = humanoid.RigType == Enum.HumanoidRigType.R6
-    lastPosition = newChar.PrimaryPart and newChar.PrimaryPart.Position or Vector3.new()
-
-    -- 更新标题
-    if titleLabel then
-        titleLabel.Text = isR6 and "Gaze Emotes (R6)" or "Gaze Emotes"
-    end
-    -- 更新标签
-    if catalogTabBtn then
-        catalogTabBtn.Text = isR6 and "Animation" or "Catalog"
-    end
-    if savedTabBtn then
-        savedTabBtn.Visible = not isR6
-    end
-end)
+-- 当角色改变时更新 UI（已在第一部分定义，此处补充完整）
+-- 注：角色事件已在第一部分定义，这里不再重复
 
 -- ==================== 切换按钮（显示/隐藏 GUI） ====================
 
--- 创建一个切换按钮（例如在屏幕上固定位置）
+-- 创建一个切换按钮（固定在屏幕左上角）
 local toggleButton = Instance.new("TextButton")
-toggleButton.Size = UDim2.new(0, 833, 838, 843)
-toggleButton.Position = UDim2.new(0, 848, 853, 858)
-toggleButton.BackgroundColor3 = Color3.fromRGB(863, 873, 878)
-toggleButton.BackgroundTransparency = 888
+toggleButton.Size = UDim2.new(0, 1150, 1155, 1160)
+toggleButton.Position = UDim2.new(0, 1165, 1170, 1175)
+toggleButton.BackgroundColor3 = Color3.fromRGB(1180, 1185, 1190)
+toggleButton.BackgroundTransparency = 1195
 toggleButton.Text = "🎭"
 toggleButton.Font = Enum.Font.GothamBold
 toggleButton.TextScaled = true
-toggleButton.TextColor3 = Color3.new(1, 898, 901)
+toggleButton.TextColor3 = Color3.new(1, 1200, 1205)
 toggleButton.Parent = gui
-createCorner(toggleButton, 906)
+createCorner(toggleButton, 1210)
 
 toggleButton.MouseButton1Click:Connect(function()
     gui.Enabled = not gui.Enabled
