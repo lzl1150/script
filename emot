@@ -1,7 +1,6 @@
 -- ============================================================
--- Gaze Emotes System – Final Integrated Version
--- 基于 AvatarEditorService 授信通道，支持动画包（Bundle）搜索
--- 分五段执行，本段为第一段：基础服务、工具函数、主框架
+-- Gaze Emotes System – 最终稳定版 (恢复原始UI + CAC授信通道)
+-- 第一段：基础服务、工具函数、主框架、标签按钮
 -- ============================================================
 
 -- 服务
@@ -21,30 +20,37 @@ local PlayerGui = Player:WaitForChild("PlayerGui")
 
 -- 主 ScreenGui
 local MainGui = Instance.new("ScreenGui")
-MainGui.Name = "EmoteGui"
+MainGui.Name = "GazeEmotesSystem"
 MainGui.ResetOnSpawn = false
 MainGui.Parent = PlayerGui
 
--- 工具函数：圆角、边框、添加父级
+-- 工具函数
 local function Round(obj, radius)
     local c = Instance.new("UICorner")
     c.CornerRadius = UDim.new(0, radius)
     c.Parent = obj
 end
 local function Border(obj, color, size)
-    obj.BorderColor3 = color
-    obj.BorderSizePixel = size or 1
+    local f = Instance.new("Frame")
+    f.Size = UDim2.new(1, 0, 1, 0)
+    f.BackgroundTransparency = 1
+    f.BorderSizePixel = 0
+    f.ZIndex = obj.ZIndex + 1
+    f.Parent = obj
+    local s = Instance.new("UIStroke")
+    s.Color = color
+    s.Thickness = size or 1
+    s.Parent = f
+    local c = Instance.new("UICorner")
+    c.CornerRadius = UDim.new(0, size or 1)
+    c.Parent = f
+    return f
 end
 local function Parent(obj, parent)
     obj.Parent = parent
 end
-
--- 尺寸辅助
 local function sz(x, y)
     return UDim2.new(0, x or 0, 0, y or 0)
-end
-local function szRel(sx, sy)
-    return UDim2.new(sx or 0, 0, sy or 0, 0)
 end
 
 -- ===== 主框架 =====
@@ -61,6 +67,7 @@ local TabBar = Instance.new("Frame")
 TabBar.Size = UDim2.new(1, 0, 0, 40)
 TabBar.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
 Parent(TabBar, MainFrame)
+Round(TabBar, 8)
 
 -- 四个标签按钮
 local Tabs = {}
@@ -73,25 +80,26 @@ local TabColors = {
 }
 for i, name in ipairs(TabNames) do
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 100, 1, 0)
-    btn.Position = UDim2.new(0, (i-1)*100, 0, 0)
+    btn.Size = UDim2.new(0.25, 0, 1, 0)
+    btn.Position = UDim2.new((i-1)*0.25, 0, 0, 0)
     btn.Text = name
     btn.BackgroundColor3 = TabColors[i]
     btn.TextColor3 = Color3.new(1,1,1)
     btn.Font = Enum.Font.GothamBold
     btn.TextScaled = true
+    btn.AutoButtonColor = false
     Parent(btn, TabBar)
     Tabs[name] = btn
 end
 
--- 内容容器（所有标签页共用此 Frame）
+-- 内容容器
 local ContentFrame = Instance.new("Frame")
 ContentFrame.Size = UDim2.new(1, -20, 1, -60)
 ContentFrame.Position = UDim2.new(0, 10, 0, 50)
 ContentFrame.BackgroundTransparency = 1
 Parent(ContentFrame, MainFrame)
 
--- 通用滚动区域（各标签页会替换其内容）
+-- 滚动区域（所有标签共用）
 local MainScroll = Instance.new("ScrollingFrame")
 MainScroll.Size = UDim2.new(1, 0, 1, 0)
 MainScroll.BackgroundTransparency = 1
@@ -104,7 +112,7 @@ Parent(ScrollLayout, MainScroll)
 
 -- 状态变量
 local CurrentTab = 1
-local SavedEmotes = {}   -- 收藏的表情
+local SavedEmotes = {}
 local Config = {
     Speed = 1,
     Weight = 1,
@@ -129,7 +137,6 @@ local function PlayAnimation(assetId, looped)
         animator = Instance.new("Animator")
         animator.Parent = Humanoid
     end
-    -- 停止已有同名轨道
     for _, track in pairs(animator:GetPlayingAnimationTracks()) do
         if track.Name == tostring(assetId) then
             track:Stop()
@@ -147,14 +154,13 @@ local function PlayAnimation(assetId, looped)
     return track
 end
 
--- 通用卡片创建函数（Catalog / Saved / Animations 共用）
+-- 通用卡片创建函数
 local function CreateItemCard(data)
-    -- data: {Id, Name, IsBundle (可选), BundleId (可选)}
+    -- data: {Id, Name, IsBundle}
     local card = Instance.new("Frame")
     card.Size = sz(120, 180)
     card.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
     card.BackgroundTransparency = 0.2
-    Parent(card, nil)  -- 由调用者设置 Parent
     Round(card, 8)
     Border(card, Color3.fromRGB(60,60,90), 1)
 
@@ -198,7 +204,6 @@ local function CreateItemCard(data)
 
     playBtn.MouseButton1Click:Connect(function()
         if data.IsBundle then
-            -- 拆 Bundle 并预览（优先 Run）
             local ok, bundle = pcall(function()
                 return AssetService:GetBundleDetailsAsync(data.Id)
             end)
@@ -252,7 +257,7 @@ end
 
 print("第一段执行完毕：基础框架已建立")
 -- ============================================================
--- 第二段：Catalog 标签（Emote 搜索、分页、保存）
+-- 第二段：Catalog 标签（Emote 搜索，使用 AvatarEditorService）
 -- ============================================================
 
 -- Catalog 状态
@@ -269,32 +274,36 @@ local CatalogSortModes = {
     {Enum.CatalogSortType.PriceHighToLow, "Price: High→Low"},
 }
 
--- 搜索 Emote
-local function SearchCatalogEmotes(keyword, page, sortIdx)
+-- 搜索 Emote（不使用 Offset，改用 Pages 翻页）
+local function SearchCatalogEmotes(keyword, sortIdx, page)
     local params = CatalogSearchParams.new()
     params.SearchKeyword = keyword or ""
     params.AssetTypes = {Enum.AvatarAssetType.EmoteAnimation}
     params.IncludeOffSale = true
     params.SortType = CatalogSortModes[sortIdx][1]
     params.Limit = 24
-    params.Offset = (page - 1) * 24
 
     local ok, pages = pcall(function()
         return AvatarEditorService:SearchCatalog(params)
     end)
-    if ok and pages then
-        return pages:GetCurrentPage()
+    if not ok or not pages then return nil end
+
+    -- 翻到目标页（Pages 只能前进，不能后退）
+    for i = 2, page do
+        local success, err = pcall(function()
+            pages:AdvanceToNextPageAsync()
+        end)
+        if not success then break end
     end
-    return nil
+    return pages:GetCurrentPage()
 end
 
 -- 显示 Catalog 页面
 local function ShowCatalogPage()
-    -- 清除旧卡片
     for _, child in pairs(MainScroll:GetChildren()) do
         if child:IsA("Frame") then child:Destroy() end
     end
-    local items = SearchCatalogEmotes(CatalogKeyword, CatalogPage, CatalogSortIdx)
+    local items = SearchCatalogEmotes(CatalogKeyword, CatalogSortIdx, CatalogPage)
     if not items or #items == 0 then
         local empty = Instance.new("TextLabel")
         empty.Size = UDim2.new(1,0,0,40)
@@ -353,7 +362,7 @@ RefreshBtn.TextColor3 = Color3.new(1,1,1)
 Parent(RefreshBtn, ContentFrame)
 Round(RefreshBtn, 4)
 
--- 分页按钮（放在底部，稍后添加）
+-- 分页按钮
 local PrevBtn = Instance.new("TextButton")
 PrevBtn.Size = UDim2.new(0.2, -5, 0, 28)
 PrevBtn.Position = UDim2.new(0, 5, 1, -32)
@@ -437,10 +446,9 @@ print("第二段执行完毕：Catalog 标签可用")
 
 -- 保存函数
 local function SaveEmote(data)
-    -- data: {Id, Name, IsBundle}
     for _, saved in ipairs(SavedEmotes) do
         if saved.Id == data.Id and saved.IsBundle == data.IsBundle then
-            return false  -- 已存在
+            return false
         end
     end
     table.insert(SavedEmotes, data)
@@ -470,7 +478,7 @@ local function ShowSavedPage()
     for i, data in ipairs(SavedEmotes) do
         local card = CreateItemCard(data)
         Parent(card, MainScroll)
-        -- 添加删除按钮
+        -- 删除按钮
         local removeBtn = Instance.new("TextButton")
         removeBtn.Size = UDim2.new(0.4, -5, 0, 24)
         removeBtn.Position = UDim2.new(0.55, 0, 1, -28)
@@ -491,72 +499,13 @@ end
 
 print("第三段执行完毕：Saved 标签可用")
 -- ============================================================
--- 第三段：Saved 标签（收藏管理）
--- ============================================================
-
--- 保存函数
-local function SaveEmote(data)
-    -- data: {Id, Name, IsBundle}
-    for _, saved in ipairs(SavedEmotes) do
-        if saved.Id == data.Id and saved.IsBundle == data.IsBundle then
-            return false  -- 已存在
-        end
-    end
-    table.insert(SavedEmotes, data)
-    return true
-end
-
-local function RemoveEmote(index)
-    table.remove(SavedEmotes, index)
-end
-
--- 显示 Saved 页面
-local function ShowSavedPage()
-    for _, child in pairs(MainScroll:GetChildren()) do
-        if child:IsA("Frame") then child:Destroy() end
-    end
-    if #SavedEmotes == 0 then
-        local empty = Instance.new("TextLabel")
-        empty.Size = UDim2.new(1,0,0,40)
-        empty.BackgroundTransparency = 1
-        empty.Text = "No saved emotes yet. Use Catalog to save."
-        empty.TextColor3 = Color3.new(0.7,0.7,0.7)
-        empty.Font = Enum.Font.Gotham
-        empty.TextScaled = true
-        Parent(empty, MainScroll)
-        return
-    end
-    for i, data in ipairs(SavedEmotes) do
-        local card = CreateItemCard(data)
-        Parent(card, MainScroll)
-        -- 添加删除按钮
-        local removeBtn = Instance.new("TextButton")
-        removeBtn.Size = UDim2.new(0.4, -5, 0, 24)
-        removeBtn.Position = UDim2.new(0.55, 0, 1, -28)
-        removeBtn.BackgroundColor3 = Color3.fromRGB(160, 50, 50)
-        removeBtn.BackgroundTransparency = 0.2
-        removeBtn.Text = "Remove"
-        removeBtn.Font = Enum.Font.GothamBold
-        removeBtn.TextScaled = true
-        removeBtn.TextColor3 = Color3.new(1,1,1)
-        Parent(removeBtn, card)
-        Round(removeBtn, 4)
-        removeBtn.MouseButton1Click:Connect(function()
-            RemoveEmote(i)
-            ShowSavedPage()
-        end)
-    end
-end
-
-print("第三段执行完毕：Saved 标签可用")
--- ============================================================
--- 第四段：Animations 标签（使用 AvatarEditorService 授信通道）
+-- 第四段：Animations 标签（使用 AvatarEditorService + BundleTypes）
 -- ============================================================
 
 -- Animations 状态
 local AnimKeyword = ""
 local AnimPage = 1
-local AnimModeIdx = 1  -- 1=Anim Packs, 2=Emotes, 3=All
+local AnimModeIdx = 1
 local AnimSortIdx = 1
 local AnimSortModes = {
     {Enum.CatalogSortType.Relevance, "Relevance"},
@@ -570,7 +519,7 @@ local AnimModes = {
     {Name="All",        BundleTypes={Enum.BundleType.Animations}, AssetTypes={Enum.AvatarAssetType.EmoteAnimation}},
 }
 
--- 搜索动画（Bundle 或 Emote）
+-- 搜索动画（使用 Pages 翻页，不用 Offset）
 local function SearchAnimations(keyword, modeIdx, sortIdx, page)
     local params = CatalogSearchParams.new()
     local mode = AnimModes[modeIdx]
@@ -580,15 +529,19 @@ local function SearchAnimations(keyword, modeIdx, sortIdx, page)
     params.IncludeOffSale = true
     params.SortType = AnimSortModes[sortIdx][1]
     params.Limit = 24
-    params.Offset = (page - 1) * 24
 
     local ok, pages = pcall(function()
         return AvatarEditorService:SearchCatalog(params)
     end)
-    if ok and pages then
-        return pages:GetCurrentPage()
+    if not ok or not pages then return nil end
+
+    for i = 2, page do
+        local success, err = pcall(function()
+            pages:AdvanceToNextPageAsync()
+        end)
+        if not success then break end
     end
-    return nil
+    return pages:GetCurrentPage()
 end
 
 -- 显示 Animations 页面
@@ -609,7 +562,6 @@ local function ShowAnimationsPage()
         return
     end
     for _, item in ipairs(items) do
-        -- 判断是 Bundle 还是 Asset
         local isBundle = (item.BundleType ~= nil)
         local card = CreateItemCard({
             Id = item.Id,
@@ -620,15 +572,8 @@ local function ShowAnimationsPage()
     end
 end
 
--- Animations 专用 UI（与 Catalog 共用搜索框、排序、分页，但重新定位）
--- 为了简化，我们复用 Catalog 的搜索框和按钮，但需要在切换标签时更新行为。
--- 更好的做法：为 Animations 创建独立的 UI 元素，覆盖 Catalog 的。
--- 但由于空间有限，我们采用动态切换：当切换到 Animations 标签时，隐藏 Catalog 的搜索框并显示 Animations 的。
--- 这里我们直接在 ContentFrame 中添加 Animations 专属控件，并通过 Visible 控制。
-
--- 隐藏 Catalog 控件（稍后在标签切换中处理）
--- 此处先创建 Animations 控件
-
+-- Animations 专用 UI 控件（与 Catalog 共用 ContentFrame，但独立显示）
+-- 注意：这些控件的 Visible 将在标签切换时控制
 local AnimSearchBox = Instance.new("TextBox")
 AnimSearchBox.Size = UDim2.new(0.6, -10, 0, 32)
 AnimSearchBox.Position = UDim2.new(0, 5, 0, 5)
@@ -746,9 +691,7 @@ AnimPageBox.FocusLost:Connect(function(enter)
     end
 end)
 
-print("第四段执行完毕：Animations 标签（新通道）可用")
--- ============================================================
-
+print("第四段执行完毕：Animations 标签（CAC 授信通道）可用")
 -- ============================================================
 -- 第五段：Settings 标签、碰撞处理、GUI 开关、标签切换、初始化
 -- ============================================================
@@ -948,7 +891,7 @@ local function SwitchTab(tabIndex)
     AnimPageBox.Visible = (tabIndex == 3)
 
     -- 更新标签按钮颜色
-    for i, btn in ipairs(Tabs) do
+    for i, btn in pairs(Tabs) do
         if i == tabIndex then
             btn.BackgroundColor3 = Color3.fromRGB(60, 120, 80)
         else
