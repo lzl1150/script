@@ -1,5 +1,5 @@
--- Gaze Emotes System - Minimal Patch (Only Add Animations Tab)
--- Part 1 of 3
+-- Gaze Emotes System - Fixed Layout with Animation Packs
+-- Part 1 of 4
 
 local Screen = setmetatable({}, {
     __index = function(_, key)
@@ -184,7 +184,7 @@ local CoreGui = game:GetService("CoreGui")
 local gui = Instance.new("ScreenGui")
 gui.Name = "GazeEmotesGUI"
 gui.Parent = CoreGui
-gui.Enabled = true  -- ★ 修复：改为 true
+gui.Enabled = false
 gui.DisplayOrder = 999
 
 local function createCorner(parent, cornerRadius)
@@ -195,8 +195,8 @@ local function createCorner(parent, cornerRadius)
 end
 
 local mainContainer = Instance.new("Frame")
-mainContainer.Size = UDim2.new(0, scale("X", 900), 0, scale("Y", 550))
-mainContainer.Position = UDim2.new(0.5, -scale("X", 450), 0.5, -scale("Y", 275))
+mainContainer.Size = UDim2.new(0, scale("X", 850), 0, scale("Y", 530))
+mainContainer.Position = UDim2.new(0.5, -scale("X", 425), 0.5, -scale("Y", 265))
 mainContainer.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 mainContainer.Active = true
 mainContainer.Draggable = true
@@ -213,10 +213,10 @@ title.TextScaled = true
 title.Parent = mainContainer
 createCorner(title, 8)
 
--- 原有三个标签按钮
+-- 三个标签按钮：Catalog、Saved、Animations（原 Packs 改为 Animations）
 local catalogTabBtn = Instance.new("TextButton")
-catalogTabBtn.Size = UDim2.new(0.172, 0, 0, scale("Y", 30))
-catalogTabBtn.Position = UDim2.new(0.038, 0, 0, scale("Y", 45))
+catalogTabBtn.Size = UDim2.new(0.19, 0, 0, scale("Y", 30))
+catalogTabBtn.Position = UDim2.new(0.04, 0, 0, scale("Y", 45))
 catalogTabBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 120)
 catalogTabBtn.Text = "Catalog"
 catalogTabBtn.TextColor3 = Color3.new(1, 1, 1)
@@ -226,8 +226,8 @@ catalogTabBtn.Parent = mainContainer
 createCorner(catalogTabBtn, 6)
 
 local savedTabBtn = Instance.new("TextButton")
-savedTabBtn.Size = UDim2.new(0.169, 0, 0, scale("Y", 30))
-savedTabBtn.Position = UDim2.new(0.222, 0, 0, scale("Y", 45))
+savedTabBtn.Size = UDim2.new(0.19, 0, 0, scale("Y", 30))
+savedTabBtn.Position = UDim2.new(0.248, 0, 0, scale("Y", 45))
 savedTabBtn.BackgroundColor3 = Color3.fromRGB(60, 120, 60)
 savedTabBtn.Text = "Saved"
 savedTabBtn.TextColor3 = Color3.new(1, 1, 1)
@@ -236,22 +236,10 @@ savedTabBtn.TextScaled = true
 savedTabBtn.Parent = mainContainer
 createCorner(savedTabBtn, 6)
 
-local animationPacksTabBtn = Instance.new("TextButton")
-animationPacksTabBtn.Size = UDim2.new(0.166, 0, 0, scale("Y", 30))
-animationPacksTabBtn.Position = UDim2.new(0.403, 0, 0, scale("Y", 45))
-animationPacksTabBtn.BackgroundColor3 = Color3.fromRGB(120, 60, 180)
-animationPacksTabBtn.Text = "Packs"
-animationPacksTabBtn.TextColor3 = Color3.new(1, 1, 1)
-animationPacksTabBtn.Font = Enum.Font.GothamBold
-animationPacksTabBtn.TextScaled = true
-animationPacksTabBtn.Parent = mainContainer
-createCorner(animationPacksTabBtn, 6)
-
--- ★ 新增：Animations 标签按钮
-local animationsTabBtn = Instance.new("TextButton")
-animationsTabBtn.Size = UDim2.new(0.174, 0, 0, scale("Y", 30))
-animationsTabBtn.Position = UDim2.new(0.581, 0, 0, scale("Y", 45))
-animationsTabBtn.BackgroundColor3 = Color3.fromRGB(180, 100, 60)
+local animationsTabBtn = Instance.new("TextButton")  -- 原 animationPacksTabBtn
+animationsTabBtn.Size = UDim2.new(0.195, 0, 0, scale("Y", 30))
+animationsTabBtn.Position = UDim2.new(0.456, 0, 0, scale("Y", 45))
+animationsTabBtn.BackgroundColor3 = Color3.fromRGB(180, 105, 55)  -- 橙色系
 animationsTabBtn.Text = "Animations"
 animationsTabBtn.TextColor3 = Color3.new(1, 1, 1)
 animationsTabBtn.Font = Enum.Font.GothamBold
@@ -260,60 +248,51 @@ animationsTabBtn.Parent = mainContainer
 createCorner(animationsTabBtn, 6)
 
 local divider = Instance.new("Frame")
-divider.Size = UDim2.new(0, scale("X", 2), 1, -scale("Y", 80))
-divider.Position = UDim2.new(0.655, -scale("X", 1), 0, scale("Y", 80))
+divider.Size = UDim2.new(0, scale("X", 2), 1, -scale("Y", 82))
+divider.Position = UDim2.new(0.638, -scale("X", 1), 0, scale("Y", 82))
 divider.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
 divider.Parent = mainContainer
 createCorner(divider, 1)
 
 local contentFrame = Instance.new("Frame")
-contentFrame.Size = UDim2.new(0.654, 0, 1, -scale("Y", 80))
-contentFrame.Position = UDim2.new(0, 0, 0, scale("Y", 80))
+contentFrame.Size = UDim2.new(0.637, 0, 1, -scale("Y", 82))
+contentFrame.Position = UDim2.new(0, 0, 0, scale("Y", 82))
 contentFrame.BackgroundTransparency = 1
 contentFrame.Parent = mainContainer
 
--- 原有 Catalog Frame（Emote 搜索）
+-- 三个内容帧
 local catalogFrame = Instance.new("Frame")
 catalogFrame.Size = UDim2.new(1, 0, 1, 0)
 catalogFrame.BackgroundTransparency = 1
 catalogFrame.Visible = true
 catalogFrame.Parent = contentFrame
 
--- 原有 Saved Frame
 local savedFrame = Instance.new("Frame")
 savedFrame.Size = UDim2.new(1, 0, 1, 0)
 savedFrame.BackgroundTransparency = 1
 savedFrame.Visible = false
 savedFrame.Parent = contentFrame
 
--- 原有 Packs Frame
-local animationPacksFrame = Instance.new("Frame")
-animationPacksFrame.Size = UDim2.new(1, 0, 1, 0)
-animationPacksFrame.BackgroundTransparency = 1
-animationPacksFrame.Visible = false
-animationPacksFrame.Parent = contentFrame
-
--- ★ 新增：Animations Frame
-local animationsFrame = Instance.new("Frame")
+local animationsFrame = Instance.new("Frame")  -- 原 animationPacksFrame
 animationsFrame.Size = UDim2.new(1, 0, 1, 0)
 animationsFrame.BackgroundTransparency = 1
 animationsFrame.Visible = false
 animationsFrame.Parent = contentFrame
 
--- 原有 Settings Frame
+-- Settings 框架（右侧）
 local settingsFrame = Instance.new("Frame")
-settingsFrame.Size = UDim2.new(0.345, -scale("X", 10), 1, -scale("Y", 80))
-settingsFrame.Position = UDim2.new(0.656, scale("X", 5), 0, scale("Y", 80))
+settingsFrame.Size = UDim2.new(0.362, -scale("X", 10), 1, -scale("Y", 85))
+settingsFrame.Position = UDim2.new(0.639, scale("X", 5), 0, scale("Y", 86))
 settingsFrame.BackgroundTransparency = 1
 settingsFrame.Parent = mainContainer
 
--- 以下继续第二段（Catalog、Saved、Packs、Animations 内部结构 + 搜索逻辑）
--- Gaze Emotes System - Minimal Patch (Only Add Animations Tab)
--- Part 2 of 3
+-- 以下继续第二段（Catalog、Saved、Animations 内部控件）
+-- Gaze Emotes System - Fixed Layout with Animation Packs
+-- Part 2 of 4
 
 -- ===== Catalog 页面控件 =====
 local searchBox = Instance.new("TextBox")
-searchBox.Size = UDim2.new(0.575, -scale("X", 8), 0, scale("Y", 28))
+searchBox.Size = UDim2.new(0.578, -scale("X", 8), 0, scale("Y", 28))
 searchBox.Position = UDim2.new(0, scale("X", 8), 0, 0)
 searchBox.PlaceholderText = "Search emotes..."
 searchBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
@@ -326,8 +305,8 @@ searchBox.Parent = catalogFrame
 createCorner(searchBox, 6)
 
 local refreshBtn = Instance.new("TextButton")
-refreshBtn.Size = UDim2.new(0.173, -scale("X", 4), 0, scale("Y", 28))
-refreshBtn.Position = UDim2.new(0.582, scale("X", 4), 0, 0)
+refreshBtn.Size = UDim2.new(0.172, -scale("X", 4), 0, scale("Y", 28))
+refreshBtn.Position = UDim2.new(0.584, scale("X", 4), 0, 0)
 refreshBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 220)
 refreshBtn.Text = "Refresh"
 refreshBtn.Font = Enum.Font.GothamBold
@@ -337,8 +316,8 @@ refreshBtn.Parent = catalogFrame
 createCorner(refreshBtn, 6)
 
 local sortBtn = Instance.new("TextButton")
-sortBtn.Size = UDim2.new(0.211, -scale("X", 8), 0, scale("Y", 28))
-sortBtn.Position = UDim2.new(0.765, scale("X", 4), 0, 0)
+sortBtn.Size = UDim2.new(0.212, -scale("X", 8), 0, scale("Y", 28))
+sortBtn.Position = UDim2.new(0.768, scale("X", 4), 0, 0)
 sortBtn.BackgroundColor3 = Color3.fromRGB(70, 70, 120)
 sortBtn.Text = "Sort: Relevance"
 sortBtn.Font = Enum.Font.GothamBold
@@ -377,8 +356,8 @@ emptyLabel.Visible = true
 emptyLabel.Parent = emotesScroll
 
 local prevBtn = Instance.new("TextButton")
-prevBtn.Size = UDim2.new(0.372, -scale("X", 6), 0, scale("Y", 32))
-prevBtn.Position = UDim2.new(0.012, scale("X", 4), 1, -scale("Y", 36))
+prevBtn.Size = UDim2.new(0.373, -scale("X", 6), 0, scale("Y", 32))
+prevBtn.Position = UDim2.new(0.011, scale("X", 4), 1, -scale("Y", 36))
 prevBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
 prevBtn.Text = "< Prev"
 prevBtn.Font = Enum.Font.GothamBold
@@ -389,8 +368,8 @@ prevBtn.Parent = catalogFrame
 createCorner(prevBtn, 6)
 
 local nextBtn = Instance.new("TextButton")
-nextBtn.Size = UDim2.new(0.382, -scale("X", 6), 0, scale("Y", 32))
-nextBtn.Position = UDim2.new(0.596, scale("X", 2), 1, -scale("Y", 36))
+nextBtn.Size = UDim2.new(0.384, -scale("X", 6), 0, scale("Y", 32))
+nextBtn.Position = UDim2.new(0.598, scale("X", 2), 1, -scale("Y", 36))
 nextBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
 nextBtn.Text = "Next >"
 nextBtn.Font = Enum.Font.GothamBold
@@ -401,8 +380,8 @@ nextBtn.Parent = catalogFrame
 createCorner(nextBtn, 6)
 
 local pageBox = Instance.new("TextBox")
-pageBox.Size = UDim2.new(0.199, 0, 0, scale("Y", 32))
-pageBox.Position = UDim2.new(0.397, scale("X", 2), 1, -scale("Y", 36))
+pageBox.Size = UDim2.new(0.198, 0, 0, scale("Y", 32))
+pageBox.Position = UDim2.new(0.395, scale("X", 2), 1, -scale("Y", 36))
 pageBox.BackgroundTransparency = 1
 pageBox.Font = Enum.Font.Gotham
 pageBox.TextScaled = true
@@ -412,8 +391,8 @@ pageBox.Visible = false
 pageBox.Parent = catalogFrame
 
 local pageNotif = Instance.new("TextLabel")
-pageNotif.Size = UDim2.new(0.322, 0, 0, scale("Y", 24))
-pageNotif.Position = UDim2.new(0.336, 0, 1, -scale("Y", 68))
+pageNotif.Size = UDim2.new(0.323, 0, 0, scale("Y", 24))
+pageNotif.Position = UDim2.new(0.334, 0, 1, -scale("Y", 68))
 pageNotif.BackgroundTransparency = 1
 pageNotif.TextColor3 = Color3.fromRGB(255, 120, 80)
 pageNotif.Font = Enum.Font.Gotham
@@ -461,52 +440,9 @@ savedLayout.CellPadding = UDim2.new(0, scale("X", 8), 0, scale("Y", 8))
 savedLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 savedLayout.Parent = savedScroll
 
--- ===== Packs 页面控件 =====
-local animationPacksSearch = Instance.new("TextBox")
-animationPacksSearch.Size = UDim2.new(1, -scale("X", 16), 0, scale("Y", 28))
-animationPacksSearch.Position = UDim2.new(0, scale("X", 8), 0, 0)
-animationPacksSearch.PlaceholderText = "Search animation packs..."
-animationPacksSearch.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-animationPacksSearch.TextColor3 = Color3.new(1, 1, 1)
-animationPacksSearch.Font = Enum.Font.Gotham
-animationPacksSearch.TextScaled = true
-animationPacksSearch.ClearTextOnFocus = false
-animationPacksSearch.Text = ""
-animationPacksSearch.Parent = animationPacksFrame
-createCorner(animationPacksSearch, 6)
-
-local animationPacksScroll = Instance.new("ScrollingFrame")
-animationPacksScroll.Size = UDim2.new(1, -scale("X", 16), 1, -scale("Y", 40))
-animationPacksScroll.Position = UDim2.new(0, scale("X", 8), 0, scale("Y", 36))
-animationPacksScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-animationPacksScroll.ScrollBarThickness = 6
-animationPacksScroll.BackgroundTransparency = 1
-animationPacksScroll.Parent = animationPacksFrame
-
-local animationPacksEmptyLabel = Instance.new("TextLabel")
-animationPacksEmptyLabel.Size = UDim2.new(1, 0, 0, scale("Y", 36))
-animationPacksEmptyLabel.Position = UDim2.new(0, 0, 0.5, -scale("Y", 18))
-animationPacksEmptyLabel.BackgroundTransparency = 1
-animationPacksEmptyLabel.Text = "No animation packs found"
-animationPacksEmptyLabel.TextColor3 = Color3.new(1, 1, 1)
-animationPacksEmptyLabel.Font = Enum.Font.GothamBold
-animationPacksEmptyLabel.TextScaled = true
-animationPacksEmptyLabel.Visible = false
-animationPacksEmptyLabel.Parent = animationPacksScroll
-
-local animationPacksLayout = Instance.new("UIGridLayout")
-animationPacksLayout.CellSize = UDim2.new(0, scale("X", 140), 0, scale("Y", 180))
-animationPacksLayout.CellPadding = UDim2.new(0, scale("X", 8), 0, scale("Y", 8))
-animationPacksLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-animationPacksLayout.Parent = animationPacksScroll
-
-animationPacksLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-    animationPacksScroll.CanvasSize = UDim2.new(0, 0, 0, animationPacksLayout.AbsoluteContentSize.Y)
-end)
-
 -- ===== Animations 页面控件（与 Catalog 结构相同）=====
 local animSearchBox = Instance.new("TextBox")
-animSearchBox.Size = UDim2.new(0.573, -scale("X", 8), 0, scale("Y", 28))
+animSearchBox.Size = UDim2.new(0.576, -scale("X", 8), 0, scale("Y", 28))
 animSearchBox.Position = UDim2.new(0, scale("X", 8), 0, 0)
 animSearchBox.PlaceholderText = "Search animations..."
 animSearchBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
@@ -520,7 +456,7 @@ createCorner(animSearchBox, 6)
 
 local animRefreshBtn = Instance.new("TextButton")
 animRefreshBtn.Size = UDim2.new(0.171, -scale("X", 4), 0, scale("Y", 28))
-animRefreshBtn.Position = UDim2.new(0.579, scale("X", 4), 0, 0)
+animRefreshBtn.Position = UDim2.new(0.582, scale("X", 4), 0, 0)
 animRefreshBtn.BackgroundColor3 = Color3.fromRGB(0, 100, 220)
 animRefreshBtn.Text = "Refresh"
 animRefreshBtn.Font = Enum.Font.GothamBold
@@ -530,8 +466,8 @@ animRefreshBtn.Parent = animationsFrame
 createCorner(animRefreshBtn, 6)
 
 local animSortBtn = Instance.new("TextButton")
-animSortBtn.Size = UDim2.new(0.209, -scale("X", 8), 0, scale("Y", 28))
-animSortBtn.Position = UDim2.new(0.762, scale("X", 4), 0, 0)
+animSortBtn.Size = UDim2.new(0.211, -scale("X", 8), 0, scale("Y", 28))
+animSortBtn.Position = UDim2.new(0.766, scale("X", 4), 0, 0)
 animSortBtn.BackgroundColor3 = Color3.fromRGB(70, 70, 120)
 animSortBtn.Text = "Sort: Relevance"
 animSortBtn.Font = Enum.Font.GothamBold
@@ -570,8 +506,8 @@ animEmptyLabel.Visible = true
 animEmptyLabel.Parent = animScroll
 
 local animPrevBtn = Instance.new("TextButton")
-animPrevBtn.Size = UDim2.new(0.371, -scale("X", 6), 0, scale("Y", 32))
-animPrevBtn.Position = UDim2.new(0.013, scale("X", 4), 1, -scale("Y", 36))
+animPrevBtn.Size = UDim2.new(0.372, -scale("X", 6), 0, scale("Y", 32))
+animPrevBtn.Position = UDim2.new(0.012, scale("X", 4), 1, -scale("Y", 36))
 animPrevBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
 animPrevBtn.Text = "< Prev"
 animPrevBtn.Font = Enum.Font.GothamBold
@@ -582,8 +518,8 @@ animPrevBtn.Parent = animationsFrame
 createCorner(animPrevBtn, 6)
 
 local animNextBtn = Instance.new("TextButton")
-animNextBtn.Size = UDim2.new(0.381, -scale("X", 6), 0, scale("Y", 32))
-animNextBtn.Position = UDim2.new(0.597, scale("X", 2), 1, -scale("Y", 36))
+animNextBtn.Size = UDim2.new(0.383, -scale("X", 6), 0, scale("Y", 32))
+animNextBtn.Position = UDim2.new(0.599, scale("X", 2), 1, -scale("Y", 36))
 animNextBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
 animNextBtn.Text = "Next >"
 animNextBtn.Font = Enum.Font.GothamBold
@@ -594,8 +530,8 @@ animNextBtn.Parent = animationsFrame
 createCorner(animNextBtn, 6)
 
 local animPageBox = Instance.new("TextBox")
-animPageBox.Size = UDim2.new(0.198, 0, 0, scale("Y", 32))
-animPageBox.Position = UDim2.new(0.396, scale("X", 2), 1, -scale("Y", 36))
+animPageBox.Size = UDim2.new(0.197, 0, 0, scale("Y", 32))
+animPageBox.Position = UDim2.new(0.394, scale("X", 2), 1, -scale("Y", 36))
 animPageBox.BackgroundTransparency = 1
 animPageBox.Font = Enum.Font.Gotham
 animPageBox.TextScaled = true
@@ -605,8 +541,8 @@ animPageBox.Visible = false
 animPageBox.Parent = animationsFrame
 
 local animPageNotif = Instance.new("TextLabel")
-animPageNotif.Size = UDim2.new(0.321, 0, 0, scale("Y", 24))
-animPageNotif.Position = UDim2.new(0.335, 0, 1, -scale("Y", 68))
+animPageNotif.Size = UDim2.new(0.324, 0, 0, scale("Y", 24))
+animPageNotif.Position = UDim2.new(0.333, 0, 1, -scale("Y", 68))
 animPageNotif.BackgroundTransparency = 1
 animPageNotif.TextColor3 = Color3.fromRGB(255, 120, 80)
 animPageNotif.Font = Enum.Font.Gotham
@@ -646,8 +582,24 @@ listLayout.SortOrder = Enum.SortOrder.LayoutOrder
 listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
     scrollFrame.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y + 10)
 end)
--- Gaze Emotes System - Minimal Patch (Only Add Animations Tab)
+-- Gaze Emotes System - Fixed Layout with Animation Packs
 -- Part 3 of 4
+
+-- ===== 通用 GetReal 函数 =====
+local function GetReal(id)
+    local ok, obj = pcall(function()
+        return game:GetObjects("rbxassetid://"..tostring(id))
+    end)
+    if not ok or not obj or #obj == 0 then return nil end
+    local target = obj[1]
+    if target:IsA("Animation") and target.AnimationId ~= "" then
+        return tonumber(target.AnimationId:match("%d+"))
+    elseif target:FindFirstChildOfClass("Animation") then
+        local anim = target:FindFirstChildOfClass("Animation")
+        return tonumber(anim.AnimationId:match("%d+"))
+    end
+    return nil
+end
 
 -- ===== Catalog 搜索逻辑（Emote）=====
 local sortModes = {
@@ -709,22 +661,6 @@ local function getAnimPages(keyword)
     return pages
 end
 
--- ===== 通用 GetReal =====
-local function GetReal(id)
-    local ok, obj = pcall(function()
-        return game:GetObjects("rbxassetid://"..tostring(id))
-    end)
-    if not ok or not obj or #obj == 0 then return nil end
-    local target = obj[1]
-    if target:IsA("Animation") and target.AnimationId ~= "" then
-        return tonumber(target.AnimationId:match("%d+"))
-    elseif target:FindFirstChildOfClass("Animation") then
-        local anim = target:FindFirstChildOfClass("Animation")
-        return tonumber(anim.AnimationId:match("%d+"))
-    end
-    return nil
-end
-
 -- ===== Catalog 卡片创建（Emote）=====
 local function createCard(item)
     local card = Instance.new("Frame")
@@ -778,7 +714,7 @@ local function createCard(item)
     end)
 
     local playBtn = Instance.new("TextButton")
-    playBtn.Size = UDim2.new(0.452, -scale("X", 5), 0, scale("Y", 24))
+    playBtn.Size = UDim2.new(0.453, -scale("X", 5), 0, scale("Y", 24))
     playBtn.Position = UDim2.new(0, scale("X", 5), 1, -scale("Y", 29))
     playBtn.BackgroundColor3 = Color3.fromRGB(60, 180, 60)
     playBtn.Text = "Play"
@@ -793,8 +729,8 @@ local function createCard(item)
     end)
     
     local saveBtn = Instance.new("TextButton")
-    saveBtn.Size = UDim2.new(0.451, -scale("X", 5), 0, scale("Y", 24))
-    saveBtn.Position = UDim2.new(0.549, 0, 1, -scale("Y", 29))
+    saveBtn.Size = UDim2.new(0.449, -scale("X", 5), 0, scale("Y", 24))
+    saveBtn.Position = UDim2.new(0.551, 0, 1, -scale("Y", 29))
     saveBtn.BackgroundColor3 = Color3.fromRGB(60, 120, 180)
     saveBtn.Text = "Save"
     saveBtn.Font = Enum.Font.GothamBold
@@ -836,16 +772,16 @@ local function createCard(item)
     return card
 end
 
--- ===== Animations 卡片创建（Animation，Play 改为 使用）=====
+-- ===== Animations 卡片创建（Animation，按钮文字为"使用"）=====
 local function createAnimCard(item)
     local card = Instance.new("Frame")
-    card.Size = UDim2.new(0, scale("X", 120), 0, scale("Y", 180))
+    card.Size = UDim2.new(0, scale("X", 120), 0, scale("Y", 175))
     card.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
     createCorner(card, 8)
     
     local thumbId = item.AssetId or item.Id
     local img = Instance.new("ImageLabel")
-    img.Size = UDim2.new(1, -scale("X", 10), 0, scale("Y", 90))
+    img.Size = UDim2.new(1, -scale("X", 10), 0, scale("Y", 95))
     img.Position = UDim2.new(0, scale("X", 5), 0, scale("Y", 5))
     img.BackgroundTransparency = 1
     img.ScaleType = Enum.ScaleType.Fit
@@ -856,8 +792,8 @@ local function createAnimCard(item)
     createCorner(img, 6)
     
     local name = Instance.new("TextLabel")
-    name.Size = UDim2.new(1, -scale("X", 10), 0, scale("Y", 28))
-    name.Position = UDim2.new(0, scale("X", 5), 0, scale("Y", 100))
+    name.Size = UDim2.new(1, -scale("X", 10), 0, scale("Y", 33))
+    name.Position = UDim2.new(0, scale("X", 5), 0, scale("Y", 104))
     name.BackgroundTransparency = 1
     name.Text = item.Name or "Unknown"
     name.TextScaled = true
@@ -870,7 +806,7 @@ local function createAnimCard(item)
     local copyLinkButton = Instance.new("TextButton")
     copyLinkButton.Parent = card
     copyLinkButton.Size = UDim2.new(0, scale("X", 36), 0, scale("Y", 36))
-    copyLinkButton.Position = UDim2.new(1, -scale("X", 42), 0, scale("Y", 5))
+    copyLinkButton.Position = UDim2.new(1, -scale("X", 43), 0, scale("Y", 137))
     copyLinkButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     copyLinkButton.Text = "🛒🔗"
     copyLinkButton.Font = Enum.Font.GothamBold
@@ -890,9 +826,9 @@ local function createAnimCard(item)
 
     -- ★ 使用按钮（替代 Play）
     local useBtn = Instance.new("TextButton")
-    useBtn.Size = UDim2.new(0.902, -scale("X", 5), 0, scale("Y", 24))
-    useBtn.Position = UDim2.new(0, scale("X", 5), 1, -scale("Y", 29))
-    useBtn.BackgroundColor3 = Color3.fromRGB(180, 120, 60)
+    useBtn.Size = UDim2.new(0.903, -scale("X", 5), 0, scale("Y", 26))
+    useBtn.Position = UDim2.new(0, scale("X", 5), 1, -scale("Y", 32))
+    useBtn.BackgroundColor3 = Color3.fromRGB(180, 120, 55)
     useBtn.Text = "使用"
     useBtn.Font = Enum.Font.GothamBold
     useBtn.TextScaled = true
@@ -906,8 +842,11 @@ local function createAnimCard(item)
     
     return card
 end
--- Gaze Emotes System - Minimal Patch (Only Add Animations Tab)
+-- Gaze Emotes System - Fixed Layout with Animation Packs
 -- Part 4 of 4
+
+-- 修复 GUI 可见性
+gui.Enabled = true
 
 -- ===== Catalog 翻页逻辑 =====
 local isLoading = false
@@ -1147,16 +1086,105 @@ end
 local function switchTab(tab)
     catalogFrame.Visible = (tab == "catalog")
     savedFrame.Visible = (tab == "saved")
-    animationPacksFrame.Visible = (tab == "packs")
     animationsFrame.Visible = (tab == "animations")
     if tab == "saved" then refreshSavedTab() end
-    if tab == "packs" then refreshAnimationPacksTab() end
 end
 
 catalogTabBtn.MouseButton1Click:Connect(function() switchTab("catalog") end)
 savedTabBtn.MouseButton1Click:Connect(function() switchTab("saved") end)
-animationPacksTabBtn.MouseButton1Click:Connect(function() switchTab("packs") end)
 animationsTabBtn.MouseButton1Click:Connect(function() switchTab("animations") end)
+
+-- ===== Saved 卡片创建 =====
+local function createSavedCard(item)
+    local card = Instance.new("Frame")
+    card.Size = UDim2.new(0, scale("X", 120), 0, scale("Y", 200))
+    card.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+    createCorner(card, 8)
+    
+    local thumbId = item.AssetId or item.Id
+    local img = Instance.new("ImageLabel")
+    img.Size = UDim2.new(1, -scale("X", 10), 0, scale("Y", 92))
+    img.Position = UDim2.new(0, scale("X", 5), 0, scale("Y", 5))
+    img.BackgroundTransparency = 1
+    img.ScaleType = Enum.ScaleType.Fit
+    pcall(function()
+        if thumbId and type(thumbId) == "number" then
+            img.Image = "rbxthumb://type=Asset&id=" .. tostring(thumbId) .. "&w=150&h=150"
+        else
+            img.Image = "rbxthumb://type=Asset&id=11768914234&w=150&h=150"
+        end
+    end)
+    img.Parent = card
+    createCorner(img, 6)
+    
+    local name = Instance.new("TextLabel")
+    name.Size = UDim2.new(1, -scale("X", 10), 0, scale("Y", 30))
+    name.Position = UDim2.new(0, scale("X", 5), 0, scale("Y", 101))
+    name.BackgroundTransparency = 1
+    name.Text = item.Name or "Unknown"
+    name.TextScaled = true
+    name.TextWrapped = true
+    name.Font = Enum.Font.GothamBold
+    name.TextColor3 = Color3.new(1, 1, 1)
+    name.Parent = card
+    
+    local playBtn = Instance.new("TextButton")
+    playBtn.Size = UDim2.new(0.444, -scale("X", 5), 0, scale("Y", 24))
+    playBtn.Position = UDim2.new(0, scale("X", 5), 1, -scale("Y", 72))
+    playBtn.BackgroundColor3 = Color3.fromRGB(60, 180, 60)
+    playBtn.Text = "Play"
+    playBtn.Font = Enum.Font.GothamBold
+    playBtn.TextScaled = true
+    playBtn.TextColor3 = Color3.new(1, 1, 1)
+    playBtn.Parent = card
+    createCorner(playBtn, 6)
+    
+    playBtn.MouseButton1Click:Connect(function() LoadTrack(item.Id) end)
+    
+    local removeBtn = Instance.new("TextButton")
+    removeBtn.Size = UDim2.new(0.438, -scale("X", 5), 0, scale("Y", 24))
+    removeBtn.Position = UDim2.new(0.562, 0, 1, -scale("Y", 39))
+    removeBtn.BackgroundColor3 = Color3.fromRGB(180, 60, 60)
+    removeBtn.Text = "Remove"
+    removeBtn.Font = Enum.Font.GothamBold
+    removeBtn.TextScaled = true
+    removeBtn.TextColor3 = Color3.new(1, 1, 1)
+    removeBtn.Parent = card
+    createCorner(removeBtn, 6)
+    
+    removeBtn.MouseButton1Click:Connect(function()
+        for i, saved in ipairs(savedEmotes) do
+            if saved.Id == item.Id then
+                table.remove(savedEmotes, i)
+                saveEmotesToData()
+                refreshSavedTab()
+                break
+            end
+        end
+    end)
+    
+    local copyBtn = Instance.new("TextButton")
+    copyBtn.Size = UDim2.new(0, scale("X", 51), 0, scale("Y", 22))
+    copyBtn.Position = UDim2.new(0.291, 0, 0, scale("Y", 96))
+    copyBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 150)
+    copyBtn.Text = "Copy ID"
+    copyBtn.Font = Enum.Font.GothamBold
+    copyBtn.TextScaled = true
+    copyBtn.TextColor3 = Color3.new(1, 1, 1)
+    copyBtn.Parent = card
+    createCorner(copyBtn, 6)
+    
+    copyBtn.MouseButton1Click:Connect(function()
+        if setclipboard then setclipboard(tostring(item.Id)) end
+        copyBtn.Text = "Copied!"
+        copyBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
+        task.wait(0.7)
+        copyBtn.Text = "Copy ID"
+        copyBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 150)
+    end)
+    
+    return card
+end
 
 -- ===== Saved 刷新 =====
 local function refreshSavedTab()
@@ -1183,329 +1211,7 @@ end
 
 savedSearch:GetPropertyChangedSignal("Text"):Connect(refreshSavedTab)
 
--- ===== Saved 卡片创建（原样）=====
-local function createSavedCard(item)
-    local card = Instance.new("Frame")
-    card.Size = UDim2.new(0, scale("X", 120), 0, scale("Y", 200))
-    card.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
-    createCorner(card, 8)
-    
-    local thumbId = item.AssetId or item.Id
-    local img = Instance.new("ImageLabel")
-    img.Size = UDim2.new(1, -scale("X", 10), 0, scale("Y", 90))
-    img.Position = UDim2.new(0, scale("X", 5), 0, scale("Y", 5))
-    img.BackgroundTransparency = 1
-    img.ScaleType = Enum.ScaleType.Fit
-    pcall(function()
-        if thumbId and type(thumbId) == "number" then
-            img.Image = "rbxthumb://type=Asset&id=" .. tostring(thumbId) .. "&w=150&h=150"
-        else
-            img.Image = "rbxthumb://type=Asset&id=11768914234&w=150&h=150"
-        end
-    end)
-    img.Parent = card
-    createCorner(img, 6)
-    
-    local name = Instance.new("TextLabel")
-    name.Size = UDim2.new(1, -scale("X", 10), 0, scale("Y", 28))
-    name.Position = UDim2.new(0, scale("X", 5), 0, scale("Y", 100))
-    name.BackgroundTransparency = 1
-    name.Text = item.Name or "Unknown"
-    name.TextScaled = true
-    name.TextWrapped = true
-    name.Font = Enum.Font.GothamBold
-    name.TextColor3 = Color3.new(1, 1, 1)
-    name.Parent = card
-    
-    local playBtn = Instance.new("TextButton")
-    playBtn.Size = UDim2.new(0.443, -scale("X", 5), 0, scale("Y", 24))
-    playBtn.Position = UDim2.new(0, scale("X", 5), 1, -scale("Y", 29))
-    playBtn.BackgroundColor3 = Color3.fromRGB(60, 180, 60)
-    playBtn.Text = "Play"
-    playBtn.Font = Enum.Font.GothamBold
-    playBtn.TextScaled = true
-    playBtn.TextColor3 = Color3.new(1, 1, 1)
-    playBtn.Parent = card
-    createCorner(playBtn, 6)
-    
-    playBtn.MouseButton1Click:Connect(function() LoadTrack(item.Id) end)
-    
-    local removeBtn = Instance.new("TextButton")
-    removeBtn.Size = UDim2.new(0.439, -scale("X", 5), 0, scale("Y", 24))
-    removeBtn.Position = UDim2.new(0.561, 0, 1, -scale("Y", 29))
-    removeBtn.BackgroundColor3 = Color3.fromRGB(180, 60, 60)
-    removeBtn.Text = "Remove"
-    removeBtn.Font = Enum.Font.GothamBold
-    removeBtn.TextScaled = true
-    removeBtn.TextColor3 = Color3.new(1, 1, 1)
-    removeBtn.Parent = card
-    createCorner(removeBtn, 6)
-    
-    removeBtn.MouseButton1Click:Connect(function()
-        for i, saved in ipairs(savedEmotes) do
-            if saved.Id == item.Id then
-                table.remove(savedEmotes, i)
-                saveEmotesToData()
-                refreshSavedTab()
-                break
-            end
-        end
-    end)
-    
-    local copyBtn = Instance.new("TextButton")
-    copyBtn.Size = UDim2.new(0, scale("X", 50), 0, scale("Y", 22))
-    copyBtn.Position = UDim2.new(0.293, 0, 0, scale("Y", 5))
-    copyBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 150)
-    copyBtn.Text = "Copy ID"
-    copyBtn.Font = Enum.Font.GothamBold
-    copyBtn.TextScaled = true
-    copyBtn.TextColor3 = Color3.new(1, 1, 1)
-    copyBtn.Parent = card
-    createCorner(copyBtn, 6)
-    
-    copyBtn.MouseButton1Click:Connect(function()
-        if setclipboard then setclipboard(tostring(item.Id)) end
-        copyBtn.Text = "Copied!"
-        copyBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
-        task.wait(0.7)
-        copyBtn.Text = "Copy ID"
-        copyBtn.BackgroundColor3 = Color3.fromRGB(100, 100, 150)
-    end)
-    
-    return card
-end
-
--- ===== Packs 相关（原样）=====
-local ANIMATION_PACKS_FILE = "GazeEmotes_AnimationPacks.json"
-local animationPacks = {}
-
-local function loadAnimationPacks()
-    local success, data = pcall(function()
-        if readfile and isfile and isfile(ANIMATION_PACKS_FILE) then
-            return HttpService:JSONDecode(readfile(ANIMATION_PACKS_FILE))
-        end
-        return {}
-    end)
-    if success and type(data) == "table" then
-        animationPacks = data
-    else
-        animationPacks = {}
-    end
-end
-
-local function saveAnimationPacksToData()
-    pcall(function()
-        if writefile then
-            writefile(ANIMATION_PACKS_FILE, HttpService:JSONEncode(animationPacks))
-        end
-    end)
-end
-
-loadAnimationPacks()
-
-local function createAnimationPackCard(pack)
-    local card = Instance.new("Frame")
-    card.Size = UDim2.new(0, scale("X", 140), 0, scale("Y", 180))
-    card.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
-    createCorner(card, 8)
-    
-    local nameLabel = Instance.new("TextLabel")
-    nameLabel.Size = UDim2.new(1, -scale("X", 10), 0, scale("Y", 40))
-    nameLabel.Position = UDim2.new(0, scale("X", 5), 0, scale("Y", 5))
-    nameLabel.BackgroundTransparency = 1
-    nameLabel.Text = pack.Name
-    nameLabel.TextColor3 = Color3.new(1, 1, 1)
-    nameLabel.Font = Enum.Font.GothamBold
-    nameLabel.TextScaled = true
-    nameLabel.TextWrapped = true
-    nameLabel.Parent = card
-    
-    local countLabel = Instance.new("TextLabel")
-    countLabel.Size = UDim2.new(1, -scale("X", 10), 0, scale("Y", 20))
-    countLabel.Position = UDim2.new(0, scale("X", 5), 0, scale("Y", 50))
-    countLabel.BackgroundTransparency = 1
-    countLabel.Text = tostring(#pack.Emotes) .. " emotes"
-    countLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-    countLabel.Font = Enum.Font.Gotham
-    countLabel.TextScaled = true
-    countLabel.Parent = card
-    
-    local viewBtn = Instance.new("TextButton")
-    viewBtn.Size = UDim2.new(0.886, 0, 0, scale("Y", 24))
-    viewBtn.Position = UDim2.new(0.057, 0, 1, -scale("Y", 55))
-    viewBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
-    viewBtn.Text = "View"
-    viewBtn.TextColor3 = Color3.new(1, 1, 1)
-    viewBtn.Font = Enum.Font.GothamBold
-    viewBtn.TextScaled = true
-    viewBtn.Parent = card
-    createCorner(viewBtn, 6)
-    
-    local deleteBtn = Instance.new("TextButton")
-    deleteBtn.Size = UDim2.new(0.884, 0, 0, scale("Y", 24))
-    deleteBtn.Position = UDim2.new(0.059, 0, 1, -scale("Y", 25))
-    deleteBtn.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
-    deleteBtn.Text = "Delete"
-    deleteBtn.TextColor3 = Color3.new(1, 1, 1)
-    deleteBtn.Font = Enum.Font.GothamBold
-    deleteBtn.TextScaled = true
-    deleteBtn.Parent = card
-    createCorner(deleteBtn, 6)
-    
-    viewBtn.MouseButton1Click:Connect(function()
-        showAnimationPackDetails(pack)
-    end)
-    
-    deleteBtn.MouseButton1Click:Connect(function()
-        for i, p in ipairs(animationPacks) do
-            if p.Id == pack.Id then
-                table.remove(animationPacks, i)
-                saveAnimationPacksToData()
-                refreshAnimationPacksTab()
-                break
-            end
-        end
-    end)
-    
-    return card
-end
-
-local function showAnimationPackDetails(pack)
-    local detailsFrame = Instance.new("Frame")
-    detailsFrame.Size = UDim2.new(0, scale("X", 400), 0, scale("Y", 300))
-    detailsFrame.Position = UDim2.new(0.5, -scale("X", 200), 0.5, -scale("Y", 150))
-    detailsFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    detailsFrame.ZIndex = 20
-    detailsFrame.Parent = gui
-    createCorner(detailsFrame, 12)
-    detailsFrame.Active = true
-    detailsFrame.Draggable = true
-    
-    local closeBtn = Instance.new("TextButton")
-    closeBtn.Size = UDim2.new(0, scale("X", 30), 0, scale("Y", 30))
-    closeBtn.Position = UDim2.new(1, -scale("X", 35), 0, scale("Y", 5))
-    closeBtn.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
-    closeBtn.Text = "X"
-    closeBtn.TextColor3 = Color3.new(1, 1, 1)
-    closeBtn.Font = Enum.Font.GothamBold
-    closeBtn.TextScaled = true
-    closeBtn.ZIndex = 21
-    closeBtn.Parent = detailsFrame
-    createCorner(closeBtn, 15)
-    
-    local titleLabel = Instance.new("TextLabel")
-    titleLabel.Size = UDim2.new(1, -scale("X", 40), 0, scale("Y", 40))
-    titleLabel.Position = UDim2.new(0, scale("X", 10), 0, scale("Y", 10))
-    titleLabel.BackgroundTransparency = 1
-    titleLabel.Text = pack.Name
-    titleLabel.TextColor3 = Color3.new(1, 1, 1)
-    titleLabel.Font = Enum.Font.GothamBold
-    titleLabel.TextScaled = true
-    titleLabel.ZIndex = 21
-    titleLabel.Parent = detailsFrame
-    
-    local scroll = Instance.new("ScrollingFrame")
-    scroll.Size = UDim2.new(1, -scale("X", 20), 1, -scale("Y", 60))
-    scroll.Position = UDim2.new(0, scale("X", 10), 0, scale("Y", 60))
-    scroll.BackgroundTransparency = 1
-    scroll.ScrollBarThickness = 6
-    scroll.ZIndex = 21
-    scroll.Parent = detailsFrame
-    
-    local layout = Instance.new("UIListLayout")
-    layout.Padding = UDim.new(0, 5)
-    layout.Parent = scroll
-    
-    for _, emote in ipairs(pack.Emotes) do
-        local emoteFrame = Instance.new("Frame")
-        emoteFrame.Size = UDim2.new(1, 0, 0, scale("Y", 40))
-        emoteFrame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-        emoteFrame.ZIndex = 22
-        emoteFrame.Parent = scroll
-        createCorner(emoteFrame, 6)
-        
-        local nameLabel = Instance.new("TextLabel")
-        nameLabel.Size = UDim2.new(0.586, 0, 1, 0)
-        nameLabel.Position = UDim2.new(0, scale("X", 10), 0, 0)
-        nameLabel.BackgroundTransparency = 1
-        nameLabel.Text = emote.Name or "Unknown"
-        nameLabel.TextColor3 = Color3.new(1, 1, 1)
-        nameLabel.Font = Enum.Font.Gotham
-        nameLabel.TextScaled = true
-        nameLabel.TextXAlignment = Enum.TextXAlignment.Left
-        nameLabel.ZIndex = 23
-        nameLabel.Parent = emoteFrame
-        
-        local playBtn = Instance.new("TextButton")
-        playBtn.Size = UDim2.new(0.186, 0, 0.687, 0)
-        playBtn.Position = UDim2.new(0.594, scale("X", 5), 0.159, 0)
-        playBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 50)
-        playBtn.Text = "Play"
-        playBtn.TextColor3 = Color3.new(1, 1, 1)
-        playBtn.Font = Enum.Font.GothamBold
-        playBtn.TextScaled = true
-        playBtn.ZIndex = 23
-        playBtn.Parent = emoteFrame
-        createCorner(playBtn, 6)
-        
-        local removeBtn = Instance.new("TextButton")
-        removeBtn.Size = UDim2.new(0.185, 0, 0.686, 0)
-        removeBtn.Position = UDim2.new(0.797, scale("X", 5), 0.16, 0)
-        removeBtn.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
-        removeBtn.Text = "Remove"
-        removeBtn.TextColor3 = Color3.new(1, 1, 1)
-        removeBtn.Font = Enum.Font.GothamBold
-        removeBtn.TextScaled = true
-        removeBtn.ZIndex = 23
-        removeBtn.Parent = emoteFrame
-        createCorner(removeBtn, 6)
-        
-        playBtn.MouseButton1Click:Connect(function() LoadTrack(emote.Id) end)
-        
-        removeBtn.MouseButton1Click:Connect(function()
-            for i, e in ipairs(pack.Emotes) do
-                if e.Id == emote.Id then
-                    table.remove(pack.Emotes, i)
-                    saveAnimationPacksToData()
-                    showAnimationPackDetails(pack)
-                    break
-                end
-            end
-        end)
-    end
-    
-    scroll.CanvasSize = UDim2.new(0, 0, 0, #pack.Emotes * 45)
-    
-    closeBtn.MouseButton1Click:Connect(function()
-        detailsFrame:Destroy()
-    end)
-end
-
-local function refreshAnimationPacksTab()
-    for _, child in ipairs(animationPacksScroll:GetChildren()) do
-        if child:IsA("Frame") then child:Destroy() end
-    end
-    local text = (animationPacksSearch.Text or ""):lower()
-    local results = {}
-    for _, pack in ipairs(animationPacks) do
-        if text == "" or (pack.Name and pack.Name:lower():find(text, 1, true)) then
-            table.insert(results, pack)
-        end
-    end
-    if #results > 0 then
-        animationPacksEmptyLabel.Visible = false
-        for _, pack in ipairs(results) do
-            createAnimationPackCard(pack).Parent = animationPacksScroll
-        end
-    else
-        animationPacksEmptyLabel.Visible = true
-    end
-    animationPacksScroll.CanvasSize = UDim2.new(0, 0, 0, animationPacksLayout.AbsoluteContentSize.Y)
-end
-
-animationPacksSearch:GetPropertyChangedSignal("Text"):Connect(refreshAnimationPacksTab)
-
--- ===== 设置项（原样）=====
+-- ===== 设置项 =====
 local function createToggleSetting(name, settingKey, default)
     local frame = Instance.new("Frame")
     frame.Size = UDim2.new(1, 0, 0, scale("Y", 28))
@@ -1514,7 +1220,7 @@ local function createToggleSetting(name, settingKey, default)
     createCorner(frame, 6)
     
     local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0.626, 0, 1, 0)
+    label.Size = UDim2.new(0.627, 0, 1, 0)
     label.Position = UDim2.new(0, scale("X", 8), 0, 0)
     label.BackgroundTransparency = 1
     label.Text = name
@@ -1525,8 +1231,8 @@ local function createToggleSetting(name, settingKey, default)
     label.Parent = frame
     
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0.286, 0, 0.713, 0)
-    btn.Position = UDim2.new(0.668, scale("X", 4), 0.146, 0)
+    btn.Size = UDim2.new(0.287, 0, 0.712, 0)
+    btn.Position = UDim2.new(0.669, scale("X", 4), 0.144, 0)
     btn.BackgroundColor3 = Settings[settingKey] and Color3.fromRGB(0, 180, 0) or Color3.fromRGB(120, 40, 40)
     btn.Text = Settings[settingKey] and "ON" or "OFF"
     btn.TextColor3 = Color3.new(1, 1, 1)
@@ -1550,7 +1256,7 @@ local function createSliderSetting(name, settingKey, minVal, maxVal, default)
     createCorner(frame, 6)
     
     local label = Instance.new("TextLabel")
-    label.Size = UDim2.new(0.541, 0, 1, 0)
+    label.Size = UDim2.new(0.539, 0, 1, 0)
     label.Position = UDim2.new(0, scale("X", 8), 0, 0)
     label.BackgroundTransparency = 1
     label.Text = name
@@ -1561,8 +1267,8 @@ local function createSliderSetting(name, settingKey, minVal, maxVal, default)
     label.Parent = frame
     
     local valLabel = Instance.new("TextLabel")
-    valLabel.Size = UDim2.new(0.164, 0, 1, 0)
-    valLabel.Position = UDim2.new(0.587, 0, 0, 0)
+    valLabel.Size = UDim2.new(0.163, 0, 1, 0)
+    valLabel.Position = UDim2.new(0.588, 0, 0, 0)
     valLabel.BackgroundTransparency = 1
     valLabel.Text = string.format("%.2f", Settings[settingKey])
     valLabel.TextColor3 = Color3.fromRGB(255, 200, 80)
@@ -1571,8 +1277,8 @@ local function createSliderSetting(name, settingKey, minVal, maxVal, default)
     valLabel.Parent = frame
     
     local track = Instance.new("Frame")
-    track.Size = UDim2.new(0.229, 0, 0, 6)
-    track.Position = UDim2.new(0.761, 0, 0.557, -3)
+    track.Size = UDim2.new(0.232, 0, 0, 6)
+    track.Position = UDim2.new(0.762, 0, 0.554, -3)
     track.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
     track.Parent = frame
     createCorner(track, 3)
@@ -1589,7 +1295,7 @@ local function createSliderSetting(name, settingKey, minVal, maxVal, default)
     thumb.BorderSizePixel = 0
     thumb.Image = ""
     thumb.Parent = frame
-    local thumbX = 0.769 * frame.AbsoluteSize.X + (Settings[settingKey] - minVal) / (maxVal - minVal) * 0.221 * frame.AbsoluteSize.X - 7
+    local thumbX = 0.77 * frame.AbsoluteSize.X + (Settings[settingKey] - minVal) / (maxVal - minVal) * 0.224 * frame.AbsoluteSize.X - 7
     thumb.Position = UDim2.new(0, thumbX, 0, 9)
     
     local dragging = false
@@ -1602,7 +1308,7 @@ local function createSliderSetting(name, settingKey, minVal, maxVal, default)
         Settings[settingKey] = val
         valLabel.Text = string.format("%.2f", val)
         fill.Size = UDim2.new((val - minVal) / (maxVal - minVal), 0, 1, 0)
-        local newX = 0.759 * frame.AbsoluteSize.X + (val - minVal) / (maxVal - minVal) * 0.221 * frame.AbsoluteSize.X - 7
+        local newX = 0.764 * frame.AbsoluteSize.X + (val - minVal) / (maxVal - minVal) * 0.218 * frame.AbsoluteSize.X - 7
         thumb.Position = UDim2.new(0, newX, 0, 9)
     end
     
