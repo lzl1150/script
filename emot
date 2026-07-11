@@ -192,6 +192,32 @@ task.spawn(function()
 		for _, part in pairs(character:GetDescendants()) do
 			addPart(part)
 		end
+
+		local descendantConnection = character.DescendantAdded:Connect(addPart)
+
+		local heartbeatConnection
+		heartbeatConnection = RunService.Heartbeat:Connect(function()
+			if not character or not character.Parent then
+				heartbeatConnection:Disconnect()
+				descendantConnection:Disconnect()
+				return
+			end
+
+			for i = 1, #bodyParts do
+				local p = bodyParts[i]
+				if p and p.Parent then
+					p.CanCollide = false
+				end
+			end
+		end)
+	end
+
+	if player.Character then
+		setupCollision(player.Character)
+	end
+
+	player.CharacterAdded:Connect(setupCollision)
+end)
 -- ===== 新增：Animations 标签按钮 =====
 local _animTabBtn = Instance.new("TextButton")
 _animTabBtn.Size = UDim2.new(0.162, 0, 0, _4("Y", 24))
